@@ -3,12 +3,14 @@ package com.example.todocapp.todolist;
 import android.database.Cursor;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.todocapp.models.Task;
 import com.example.todocapp.repositories.ProjectDataRepository;
 import com.example.todocapp.repositories.TaskDataRepository;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 public class TaskViewModel extends ViewModel {
@@ -18,7 +20,7 @@ public class TaskViewModel extends ViewModel {
     private final Executor executor;
 
     @Nullable
-    private Cursor tasksList;
+    private LiveData<List<Task>> tasksList;
 
 
     public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor) {
@@ -34,7 +36,7 @@ public class TaskViewModel extends ViewModel {
         tasksList = taskDataSource.getTasks();
     }
 
-    public Cursor getTasksList() {
+    public LiveData<List<Task>> getTasksList() {
         return this.taskDataSource.getTasks();
     }
 

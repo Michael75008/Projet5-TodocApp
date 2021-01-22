@@ -1,10 +1,11 @@
 package com.example.todocapp.ui;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,23 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         ButterKnife.bind(this);
         this.configureViewModel();
         this.configureRecyclerView();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actions, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.filter_alphabetical:
+            case R.id.filter_alphabetical_inverted:
+            case R.id.filter_oldest_first:
+            case R.id.filter_recent_first:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

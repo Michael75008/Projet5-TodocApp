@@ -19,7 +19,7 @@ public class TaskDataRepository {
         this.taskDao = taskDao;
     }
 
-    public Cursor getTasks() {
+    public LiveData <List<Task>> getTasks() {
         return this.taskDao.getTasks();
     }
 

@@ -6,9 +6,14 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import android.database.Cursor;
 
+import com.example.todocapp.models.Project;
+import com.example.todocapp.models.Task;
+
+import java.util.List;
+
 @Dao
 public interface ProjectDao {
 
     @Query("SELECT * FROM Project")
-    Cursor getProjects();
+    LiveData <List<Project>> getProjects();
 }
