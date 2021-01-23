@@ -5,6 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,8 +17,12 @@ import com.example.todocapp.models.Task;
 import com.example.todocapp.todolist.TaskAdapter;
 import com.example.todocapp.todolist.TaskViewModel;
 
+import java.util.Calendar;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements TaskAdapter.Listener {
 
@@ -35,11 +40,17 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         ButterKnife.bind(this);
         this.configureViewModel();
         this.configureRecyclerView();
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actions, menu);
         return true;
+    }
+
+    @OnClick(R.id.fab_add_task)
+    public void onFabClick(){
+        new AddTaskDialog().createDialog();
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -63,6 +74,12 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.taskViewModel = new ViewModelProvider(this, mViewModelFactory).get(TaskViewModel.class);
         this.taskViewModel.init();
+        taskViewModel.getTasksList().observe(this, this::taskObserver);
+    }
+
+    private void taskObserver(List<Task > tasks){
+
+        adapter.updateData(tasks);
     }
 
     private void configureRecyclerView() {
