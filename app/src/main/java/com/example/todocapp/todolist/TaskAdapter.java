@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todocapp.R;
+import com.example.todocapp.models.Project;
 import com.example.todocapp.models.Task;
+import com.example.todocapp.models.TaskOnUI;
+import com.example.todocapp.utils.LiveDataTestUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +28,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
      * The list of tasks the adapter deals with
      */
     private List<Task> tasks;
+    private List<TaskOnUI> tasksOnUi;
+    private List<Project> projects;
 
     public TaskAdapter(Listener callback) {
         this.callback = callback;
+        this.tasksOnUi = new ArrayList<>();
+        this.projects = new ArrayList<>();
         this.tasks = new ArrayList<>();
     }
 
@@ -41,20 +48,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     @Override
     public void onBindViewHolder(TaskViewHolder taskViewHolder, int position) {
-        taskViewHolder.updateWithTask(this.tasks.get(position), this.callback);
+        taskViewHolder.updateWithTask(this.tasksOnUi.get(position), this.callback);
     }
 
     @Override
     public int getItemCount() {
-        return this.tasks.size();
+        return this.tasksOnUi.size();
     }
 
     public Task getTask(int position){
         return this.tasks.get(position);
     }
 
-    public void updateData(List<Task>tasks){
-        this.tasks = tasks;
+    public void updateData(List<TaskOnUI>tasks){
+        this.tasksOnUi = tasks;
         this.notifyDataSetChanged();
     }
 }

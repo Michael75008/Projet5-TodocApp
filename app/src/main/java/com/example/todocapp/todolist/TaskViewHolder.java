@@ -1,5 +1,6 @@
 package com.example.todocapp.todolist;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.TextView;
 
@@ -8,8 +9,7 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todocapp.R;
-import com.example.todocapp.models.Project;
-import com.example.todocapp.models.Task;
+import com.example.todocapp.models.TaskOnUI;
 
 import java.lang.ref.WeakReference;
 
@@ -34,12 +34,12 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         ButterKnife.bind(this, taskView);
     }
 
-    public void updateWithTask(Task task, TaskAdapter.Listener callback) {
+    public void updateWithTask(TaskOnUI task, TaskAdapter.Listener callback) {
         this.imgDelete.setOnClickListener(this);
-        this.lblTaskName.setText(task.getName());
-       /* this.imgProject.setBackgroundResource(project.getColor());
-        this.lblProjectName.setText(project.getName());*/
-        this.callbackWeakRef = new WeakReference<TaskAdapter.Listener>(callback);
+        this.lblTaskName.setText(task.getTaskName());
+        this.imgProject.setBackgroundResource(task.getProjectColor());
+        this.lblProjectName.setText(task.getProjectName());
+        this.callbackWeakRef = new WeakReference<>(callback);
     }
 
     @Override

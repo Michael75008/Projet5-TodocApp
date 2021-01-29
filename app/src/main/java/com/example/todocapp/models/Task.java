@@ -8,7 +8,7 @@ import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity(foreignKeys = @ForeignKey(entity = Project.class,
-        parentColumns = "Id",
+        parentColumns = "projectId",
         childColumns = "projectId"))
 public class Task {
 

@@ -5,6 +5,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import com.example.todocapp.R;
 import com.example.todocapp.injections.Injection;
 import com.example.todocapp.injections.ViewModelFactory;
 import com.example.todocapp.models.Task;
+import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.todolist.TaskAdapter;
 import com.example.todocapp.todolist.TaskViewModel;
 
@@ -74,11 +76,10 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.taskViewModel = new ViewModelProvider(this, mViewModelFactory).get(TaskViewModel.class);
         this.taskViewModel.init();
-        taskViewModel.getTasksList().observe(this, this::taskObserver);
+        taskViewModel.getTasksList();
     }
 
-    private void taskObserver(List<Task > tasks){
-
+    private void taskObserver(List<TaskOnUI> tasks){
         adapter.updateData(tasks);
     }
 

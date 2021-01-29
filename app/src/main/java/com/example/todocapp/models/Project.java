@@ -8,12 +8,11 @@ import androidx.annotation.NonNull;
 @Entity
 public class Project {
 
-
     /**
      * The unique identifier of the project
      */
     @PrimaryKey
-    private long Id;
+    private long projectId;
 
     /**
      * The name of the project
@@ -32,7 +31,7 @@ public class Project {
      */
 
     public Project(long projectId, String name, int color) {
-        this.Id = projectId;
+        this.projectId = projectId;
         this.name = name;
         this.color = color;
     }
@@ -43,8 +42,13 @@ public class Project {
 
     //GETTER
 
+
+    public long getProjectId() {
+        return projectId;
+    }
+
     public long getId() {
-        return Id;
+        return projectId;
     }
 
     public String getName() {
@@ -56,8 +60,13 @@ public class Project {
     }
 
     //SETTER
+
+    public void setProjectId(long projectId) {
+        this.projectId = projectId;
+    }
+
     public void setId(long id) {
-        this.Id = id;
+        this.projectId = id;
     }
 
     public void setName(String name) {
