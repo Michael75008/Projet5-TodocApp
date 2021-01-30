@@ -1,5 +1,7 @@
 package com.example.todocapp.todolist;
 
+import android.widget.ArrayAdapter;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -22,7 +24,10 @@ public class TaskViewModel extends ViewModel {
     private final Executor executor;
 
     @Nullable
-    private List<TaskOnUI> tasksList;
+    private List<Project> projectList;
+
+    @Nullable
+    private LiveData<List<Task>> tasksList;
 
 
     public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor) {
@@ -35,14 +40,21 @@ public class TaskViewModel extends ViewModel {
         if (this.tasksList != null) {
             return;
         }
-        tasksList = getTasksList();
+        tasksList = taskDataSource.getTasks();
+        executor.execute(()-> projectList = projectDataSource.getProjects());
     }
 
-    public List<TaskOnUI> getTasksList() {
+
+    public LiveData<List<Task>> getTasksList() {
+        return this.taskDataSource.getTasks();
+    }
+
+    public List<TaskOnUI> getTaskAsTaskOnUiList(List<Task> tasks) {
         List<TaskOnUI> currentTasks = new ArrayList<>();
-        for (int i = 0; i < Objects.requireNonNull(taskDataSource.getTasks().getValue()).size(); i++) {
-            Task task = taskDataSource.getTasks().getValue().get(i);
-            Project project = projectDataSource.getProjects().get(i);
+        if (tasks == null || tasks.size() == 0) return currentTasks;
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            Project project = projectList.get(i);
             if (project.getId() == task.getProjectId()) {
                 TaskOnUI taskOnUI = new TaskOnUI();
                 taskOnUI.setTaskName(task.getName());

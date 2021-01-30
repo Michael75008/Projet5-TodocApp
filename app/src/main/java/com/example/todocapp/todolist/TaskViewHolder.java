@@ -1,6 +1,7 @@
 package com.example.todocapp.todolist;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.TextView;
 
@@ -34,10 +35,11 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         ButterKnife.bind(this, taskView);
     }
 
+    @SuppressLint("RestrictedApi")
     public void updateWithTask(TaskOnUI task, TaskAdapter.Listener callback) {
         this.imgDelete.setOnClickListener(this);
         this.lblTaskName.setText(task.getTaskName());
-        this.imgProject.setBackgroundResource(task.getProjectColor());
+        this.imgProject.setSupportImageTintList(ColorStateList.valueOf(task.getProjectColor()));
         this.lblProjectName.setText(task.getProjectName());
         this.callbackWeakRef = new WeakReference<>(callback);
     }

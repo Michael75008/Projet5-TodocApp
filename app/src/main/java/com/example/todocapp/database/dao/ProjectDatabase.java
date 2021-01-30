@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import com.example.todocapp.models.Project;
 import com.example.todocapp.models.Task;
 
+import java.util.Calendar;
+
 @Database(entities = {Task.class, Project.class}, version = 1, exportSchema = false)
 public abstract class ProjectDatabase extends RoomDatabase {
 
@@ -44,25 +46,32 @@ public abstract class ProjectDatabase extends RoomDatabase {
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
 
+                ContentValues contentValues4 = new ContentValues();
                 ContentValues contentValues3 = new ContentValues();
                 ContentValues contentValues2 = new ContentValues();
                 ContentValues contentValues = new ContentValues();
 
-                contentValues.put("id", 1L);
+                contentValues.put("projectId", 1L);
                 contentValues.put("name", "Projet Tartampion");
                 contentValues.put("color", 0xFFEADAD1);
 
-                contentValues2.put("id", 2L);
+                contentValues2.put("projectId", 2L);
                 contentValues2.put("name", "Projet Lucidia");
                 contentValues2.put("color", 0xFFB4CDBA);
 
-                contentValues3.put("id", 3L);
+                contentValues3.put("projectId", 3L);
                 contentValues3.put("name", "Projet Circus");
                 contentValues3.put("color", 0xFFA3CED2);
+
+                contentValues4.put("taskId", 1L);
+                contentValues4.put("projectId", 1L);
+                contentValues4.put("name", "Faire les courses");
+                contentValues4.put("creationTimeStamp", Calendar.getInstance().getTimeInMillis());
 
                 db.insert("Project", OnConflictStrategy.IGNORE, contentValues);
                 db.insert("Project", OnConflictStrategy.IGNORE, contentValues2);
                 db.insert("Project", OnConflictStrategy.IGNORE, contentValues3);
+                db.insert("Task", OnConflictStrategy.IGNORE, contentValues4);
 
 
             }

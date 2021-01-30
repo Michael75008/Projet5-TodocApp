@@ -1,5 +1,6 @@
 package com.example.todocapp.models;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import android.content.ContentValues;
 
@@ -36,6 +37,7 @@ public class Project {
         this.color = color;
     }
 
+    @Ignore
     public Project() {
 
     }

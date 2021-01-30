@@ -5,11 +5,15 @@ import android.content.ContentValues;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(foreignKeys = @ForeignKey(entity = Project.class,
+@Entity(tableName = "Task",
+        foreignKeys = @ForeignKey(entity = Project.class,
         parentColumns = "projectId",
-        childColumns = "projectId"))
+        childColumns = "projectId"),
+        indices = @Index(value = {"projectId"}, unique = true))
 public class Task {
 
     /**
@@ -43,6 +47,7 @@ public class Task {
         this.creationTimestamp = creationTimestamp;
     }
 
+    @Ignore
     public Task() {
 
     }

@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         ButterKnife.bind(this);
         this.configureViewModel();
         this.configureRecyclerView();
-
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,11 +75,11 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.taskViewModel = new ViewModelProvider(this, mViewModelFactory).get(TaskViewModel.class);
         this.taskViewModel.init();
-        taskViewModel.getTasksList();
+        taskViewModel.getTasksList().observe(this, this::taskObserver);
     }
 
-    private void taskObserver(List<TaskOnUI> tasks){
-        adapter.updateData(tasks);
+    private void taskObserver(List<Task > tasks){
+        adapter.updateData(taskViewModel.getTaskAsTaskOnUiList(tasks));
     }
 
     private void configureRecyclerView() {
