@@ -2,6 +2,7 @@ package com.example.todocapp.models;
 
 public class TaskOnUI {
 
+    private int taskId;
 
     private int projectColor;
 
@@ -10,7 +11,8 @@ public class TaskOnUI {
     private String taskName;
 
 
-    public TaskOnUI(int projectColor, String projectName, String taskName) {
+    public TaskOnUI(int taskId, int projectColor, String projectName, String taskName) {
+        this.taskId = taskId;
         this.projectColor = projectColor;
         this.projectName = projectName;
         this.taskName = taskName;
@@ -42,6 +44,15 @@ public class TaskOnUI {
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
     }
 
 }

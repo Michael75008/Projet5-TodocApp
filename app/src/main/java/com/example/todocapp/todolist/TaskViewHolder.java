@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private WeakReference<TaskAdapter.Listener> callbackWeakRef;
+    public TaskOnUI sTaskOnUI;
 
     @BindView(R.id.img_delete)
     AppCompatImageButton imgDelete;
@@ -37,6 +38,7 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     @SuppressLint("RestrictedApi")
     public void updateWithTask(TaskOnUI task, TaskAdapter.Listener callback) {
+        sTaskOnUI = task;
         this.imgDelete.setOnClickListener(this);
         this.lblTaskName.setText(task.getTaskName());
         this.imgProject.setSupportImageTintList(ColorStateList.valueOf(task.getProjectColor()));
@@ -45,9 +47,11 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(View v) {
+
         TaskAdapter.Listener callback = callbackWeakRef.get();
         if (callback != null)
-            callback.onClickDeleteButton(getAdapterPosition());
+            callback.onClickDeleteButton(sTaskOnUI);
     }
 }
+

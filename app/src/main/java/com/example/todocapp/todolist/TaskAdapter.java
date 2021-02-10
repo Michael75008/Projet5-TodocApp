@@ -5,13 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todocapp.R;
-import com.example.todocapp.models.Project;
-import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
-import com.example.todocapp.utils.LiveDataTestUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +18,21 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
     //CALLBACK
     public interface Listener {
-        void onClickDeleteButton(int position);
+        void onClickDeleteButton(TaskOnUI taskOnUI);
     }
 
     private final Listener callback;
     /**
      * The list of tasks the adapter deals with
      */
-    private List<Task> tasks;
     private List<TaskOnUI> tasksOnUi;
-    private List<Project> projects;
 
     public TaskAdapter(Listener callback) {
         this.callback = callback;
         this.tasksOnUi = new ArrayList<>();
-        this.projects = new ArrayList<>();
-        this.tasks = new ArrayList<>();
     }
 
+    @NonNull
     public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -56,11 +51,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         return this.tasksOnUi.size();
     }
 
-    public Task getTask(int position){
-        return this.tasks.get(position);
-    }
-
-    public void updateData(List<TaskOnUI>tasks){
+    public void updateData(List<TaskOnUI> tasks) {
         this.tasksOnUi = tasks;
         this.notifyDataSetChanged();
     }

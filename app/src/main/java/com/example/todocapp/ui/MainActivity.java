@@ -1,12 +1,13 @@
 package com.example.todocapp.ui;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +20,6 @@ import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.todolist.TaskAdapter;
 import com.example.todocapp.todolist.TaskViewModel;
 
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
 
     @BindView(R.id.list_tasks)
     RecyclerView recyclerView;
+    @BindView(R.id.lbl_no_task)
+    TextView mLblNoTasks;
 
     private TaskViewModel taskViewModel;
     private TaskAdapter adapter;
@@ -50,25 +52,22 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
     }
 
     @OnClick(R.id.fab_add_task)
-    public void onFabClick(){
-        new AddTaskDialog().createDialog();
+    public void onFabClick() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_add_task);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.filter_alphabetical:
+
             case R.id.filter_alphabetical_inverted:
+
             case R.id.filter_oldest_first:
             case R.id.filter_recent_first:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onClickDeleteButton(int position) {
-        this.deleteTask(this.adapter.getTask(position));
     }
 
     private void configureViewModel() {
@@ -78,8 +77,9 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         taskViewModel.getTasksList().observe(this, this::taskObserver);
     }
 
-    private void taskObserver(List<Task > tasks){
-        adapter.updateData(taskViewModel.getTaskAsTaskOnUiList(tasks));
+    private void taskObserver(List<Task> tasks) {
+        setVisibility(tasks.size() == 0);
+        adapter.updateData(taskViewModel.getTasksOnUi(tasks));
     }
 
     private void configureRecyclerView() {
@@ -88,8 +88,18 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    private void setVisibility(boolean isVisible) {
+        if (isVisible) {
+            mLblNoTasks.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            mLblNoTasks.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
 
-    private void deleteTask(Task task){
-        this.taskViewModel.deleteTask(task.getTaskId());
+    @Override
+    public void onClickDeleteButton(TaskOnUI taskOnUI) {
+        this.taskViewModel.deleteTask(taskOnUI.getTaskId());
     }
 }

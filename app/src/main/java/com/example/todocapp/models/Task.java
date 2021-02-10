@@ -4,23 +4,17 @@ import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Ignore;
-import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "Task",
-        foreignKeys = @ForeignKey(entity = Project.class,
-        parentColumns = "projectId",
-        childColumns = "projectId"),
-        indices = @Index(value = {"projectId"}, unique = true))
+@Entity
 public class Task {
 
     /**
      * The unique identifier of the task
      */
-    @PrimaryKey(autoGenerate = true)
-    private long taskId;
+    @PrimaryKey
+    private int taskId;
 
     /**
      * The unique identifier of the project associated to the task
@@ -40,7 +34,7 @@ public class Task {
     @NonNull
     private long creationTimestamp;
 
-    public Task(long taskId, long projectId, String name, long creationTimestamp) {
+    public Task(int taskId, long projectId, String name, long creationTimestamp) {
         this.taskId = taskId;
         this.projectId = projectId;
         this.name = name;
@@ -51,13 +45,15 @@ public class Task {
     public Task() {
 
     }
-    public long getTaskId() {
+
+    public int getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(long taskId) {
+    public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
+
     public long getProjectId() {
         return projectId;
     }
@@ -85,10 +81,11 @@ public class Task {
     // --- UTILS ---
     public static Task fromContentValues(ContentValues values) {
         final Task task = new Task();
-        if(values.containsKey("taskId")) task.setTaskId(values.getAsLong("taskId"));
+        if (values.containsKey("taskId")) task.setTaskId(values.getAsInteger("taskId"));
         if (values.containsKey("name")) task.setName(values.getAsString("name"));
         if (values.containsKey("projectId")) task.setProjectId(values.getAsLong("projectId"));
-        if(values.containsKey("creationTime")) task.setCreationTimestamp(values.getAsLong("creationTime"));
+        if (values.containsKey("creationTime"))
+            task.setCreationTimestamp(values.getAsLong("creationTime"));
         return task;
     }
 }
