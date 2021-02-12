@@ -19,22 +19,6 @@ public class TaskDataRepository {
         return this.taskDao.getTasks();
     }
 
-    public LiveData<List<Task>> getTasksByAsc() {
-        return taskDao.getTasksByAsc();
-    }
-
-    public LiveData<List<Task>> getTaskssByDesc() {
-        return taskDao.getTasksByDesc();
-    }
-
-    public LiveData<List<Task>> getTasksByCreationTimeAsc(){
-        return taskDao.getTasksByCreationTimeAsc();
-    }
-
-    public LiveData<List<Task>> getTasksByCreationTimeDesc(){
-        return taskDao.getTasksByCreationTimeDesc();
-    }
-
     public void createTask(Task task) {
         taskDao.createTask(task);
     }

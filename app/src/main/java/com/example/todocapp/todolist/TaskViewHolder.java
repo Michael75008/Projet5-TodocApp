@@ -48,7 +48,6 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     @Override
     public void onClick(View v) {
-
         TaskAdapter.Listener callback = callbackWeakRef.get();
         if (callback != null)
             callback.onClickDeleteButton(sTaskOnUI);

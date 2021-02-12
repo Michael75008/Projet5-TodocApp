@@ -1,6 +1,5 @@
 package com.example.todocapp.ui;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements TaskAdapter.Listener {
+public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.list_tasks)
     RecyclerView recyclerView;
@@ -35,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
 
     private TaskViewModel taskViewModel;
     private TaskAdapter adapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,21 +51,12 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
 
     @OnClick(R.id.fab_add_task)
     public void onFabClick() {
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_add_task);
+        new AddTaskDialog(taskViewModel.getProjectsList()).createDialog(this);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.filter_alphabetical:
-
-            case R.id.filter_alphabetical_inverted:
-
-            case R.id.filter_oldest_first:
-            case R.id.filter_recent_first:
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        taskViewModel.update(item.getItemId());
+        return super.onOptionsItemSelected(item);
     }
 
     private void configureViewModel() {
@@ -79,11 +68,11 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
 
     private void taskObserver(List<Task> tasks) {
         setVisibility(tasks.size() == 0);
-        adapter.updateData(taskViewModel.getTasksOnUi(tasks));
+        adapter.updateData(taskViewModel.getTasksOnUi(tasks, adapter));
     }
 
     private void configureRecyclerView() {
-        this.adapter = new TaskAdapter(this);
+        this.adapter = new TaskAdapter(taskViewModel);
         this.recyclerView.setAdapter(this.adapter);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -98,8 +87,5 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.Liste
         }
     }
 
-    @Override
-    public void onClickDeleteButton(TaskOnUI taskOnUI) {
-        this.taskViewModel.deleteTask(taskOnUI.getTaskId());
-    }
+
 }

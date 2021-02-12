@@ -25,4 +25,6 @@
 
     <string name="sort_recent_first">Les plus récents d’abord</string>
 
+    <string name="empty_task_name">Le nom de la tâche doit être renseigné</string>
+
 </resources>

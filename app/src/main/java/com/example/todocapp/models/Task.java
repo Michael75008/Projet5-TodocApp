@@ -7,6 +7,8 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.util.Comparator;
+
 @Entity
 public class Task {
 
@@ -87,5 +89,42 @@ public class Task {
         if (values.containsKey("creationTime"))
             task.setCreationTimestamp(values.getAsLong("creationTime"));
         return task;
+    }
+
+    public static class TaskAZComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task left, Task right) {
+            return left.name.compareTo(right.name);
+        }
+    }
+
+    /**
+     * Comparator to sort task from Z to A
+     */
+    public static class TaskZAComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task left, Task right) {
+            return right.name.compareTo(left.name);
+        }
+    }
+
+    /**
+     * Comparator to sort task from last created to first created
+     */
+    public static class TaskRecentComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task left, Task right) {
+            return (int) (right.creationTimestamp - left.creationTimestamp);
+        }
+    }
+
+    /**
+     * Comparator to sort task from first created to last created
+     */
+    public static class TaskOldComparator implements Comparator<Task> {
+        @Override
+        public int compare(Task left, Task right) {
+            return (int) (left.creationTimestamp - right.creationTimestamp);
+        }
     }
 }

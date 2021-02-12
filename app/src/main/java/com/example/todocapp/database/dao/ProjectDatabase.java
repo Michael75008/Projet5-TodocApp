@@ -74,17 +74,17 @@ public abstract class ProjectDatabase extends RoomDatabase {
 
                 contentValues4.put("taskId", 1);
                 contentValues4.put("projectId",2L);
-                contentValues4.put("name", "Faire les courses");
+                contentValues4.put("name", "A");
                 contentValues4.put("creationTimeStamp", Calendar.getInstance().getTimeInMillis());
 
                 contentValues5.put("taskId", 2);
                 contentValues5.put("projectId",1L);
-                contentValues5.put("name", "payer");
+                contentValues5.put("name", "B");
                 contentValues5.put("creationTimeStamp", Calendar.getInstance().getTimeInMillis());
 
                 contentValues6.put("taskId", 3);
                 contentValues6.put("projectId",3L);
-                contentValues6.put("name", "et rentrer");
+                contentValues6.put("name", "C");
                 contentValues6.put("creationTimeStamp", Calendar.getInstance().getTimeInMillis());
 
                 db.insert("Project", OnConflictStrategy.IGNORE, contentValues);
