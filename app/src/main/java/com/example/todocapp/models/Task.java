@@ -15,7 +15,7 @@ public class Task {
     /**
      * The unique identifier of the task
      */
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int taskId;
 
     /**
@@ -27,7 +27,6 @@ public class Task {
     /**
      * The name of the task
      */
-    @NonNull
     private String name;
 
     /**

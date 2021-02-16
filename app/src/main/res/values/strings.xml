@@ -27,4 +27,9 @@
 
     <string name="empty_task_name">Le nom de la tâche doit être renseigné</string>
 
+    <string name="select_project">Selectionner un projet</string>
+
+    <string name="empty_text" />
+
+
 </resources>

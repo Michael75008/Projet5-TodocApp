@@ -19,10 +19,10 @@ import java.util.concurrent.Executor;
 
 public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
 
-    private final TaskDataRepository taskDataSource;
-    private final ProjectDataRepository projectDataSource;
-    private final TaskListMapper mTaskListMapper;
-    private final Executor executor;
+    private TaskDataRepository taskDataSource;
+    private  ProjectDataRepository projectDataSource;
+    private  TaskListMapper mTaskListMapper;
+    private  Executor executor;
     SortMethod mSortMethod = SortMethod.NONE;
 
     public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor, TaskListMapper taskListMapper) {
@@ -31,6 +31,7 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
         this.executor = executor;
         this.mTaskListMapper = taskListMapper;
     }
+    public TaskViewModel(){}
 
     @Nullable
     private List<Project> projectList;
@@ -59,7 +60,8 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
         return projectList;
     }
 
-    public void update (int id) {
+
+    public void displaySorter (int id) {
         if (id == R.id.filter_alphabetical) {
             mSortMethod = SortMethod.ALPHABETICAL;
         } else if (id == R.id.filter_alphabetical_inverted) {
@@ -70,6 +72,24 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
             mSortMethod = SortMethod.RECENT_FIRST;
         }
         updateTaskList();
+    }
+
+    public void sortTasks(List<Task> tasks){
+        switch (mSortMethod) {
+            case ALPHABETICAL:
+                Collections.sort(tasks, new Task.TaskAZComparator());
+                break;
+            case ALPHABETICAL_INVERTED:
+                Collections.sort(tasks, new Task.TaskZAComparator());
+                break;
+            case RECENT_FIRST:
+                Collections.sort(tasks, new Task.TaskRecentComparator());
+                break;
+            case OLD_FIRST:
+                Collections.sort(tasks, new Task.TaskOldComparator());
+                break;
+
+        }
     }
 
     public List<TaskOnUI> getTasksOnUi(List<Task> tasks, TaskAdapter adapter) {

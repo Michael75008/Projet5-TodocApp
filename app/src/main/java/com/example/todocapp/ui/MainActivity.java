@@ -15,7 +15,6 @@ import com.example.todocapp.R;
 import com.example.todocapp.injections.Injection;
 import com.example.todocapp.injections.ViewModelFactory;
 import com.example.todocapp.models.Task;
-import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.todolist.TaskAdapter;
 import com.example.todocapp.todolist.TaskViewModel;
 
@@ -35,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TaskViewModel taskViewModel;
     private TaskAdapter adapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +51,13 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab_add_task)
     public void onFabClick() {
-        new AddTaskDialog(taskViewModel.getProjectsList()).createDialog(this);
+        new AddTaskDialog(this, taskViewModel.getProjectsList(), taskViewModel).createDialog(this);
+
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        taskViewModel.update(item.getItemId());
+        taskViewModel.displaySorter(item.getItemId());
+        taskViewModel.sortTasks(taskViewModel.getTasksList().getValue());
         return super.onOptionsItemSelected(item);
     }
 
