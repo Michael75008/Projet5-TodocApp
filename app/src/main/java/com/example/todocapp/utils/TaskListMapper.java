@@ -5,6 +5,7 @@ import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class TaskListMapper {
@@ -30,6 +31,19 @@ public class TaskListMapper {
             }
         }
         return currentTasks;
+    }
+
+    public Task getTaskFromTaskUi(TaskOnUI taskOnUI, List<Project> projectList) {
+        Task task = new Task();
+        task.setName(taskOnUI.getTaskName());
+        for (int i2 = 0; i2 < projectList.size(); i2++) {
+            Project project = projectList.get(i2);
+            if (project.getName() == taskOnUI.getProjectName()) {
+                task.setProjectId(project.getProjectId());
+            }
+            task.setCreationTimestamp(Calendar.getInstance().getTime().getTime());
+        }
+        return task;
     }
 }
 

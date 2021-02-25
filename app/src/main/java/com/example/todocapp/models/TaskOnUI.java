@@ -46,7 +46,6 @@ public class TaskOnUI {
         this.taskName = taskName;
     }
 
-
     public int getTaskId() {
         return taskId;
     }

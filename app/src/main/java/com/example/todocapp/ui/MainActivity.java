@@ -15,8 +15,10 @@ import com.example.todocapp.R;
 import com.example.todocapp.injections.Injection;
 import com.example.todocapp.injections.ViewModelFactory;
 import com.example.todocapp.models.Task;
+import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.todolist.TaskAdapter;
 import com.example.todocapp.todolist.TaskViewModel;
+import com.example.todocapp.utils.TaskListMapper;
 
 import java.util.List;
 
@@ -31,8 +33,12 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.lbl_no_task)
     TextView mLblNoTasks;
 
+
+    private TaskListMapper mTaskListMapper;
     private TaskViewModel taskViewModel;
     private TaskAdapter adapter;
+    private Task mTask;
+
 
 
     @Override
@@ -42,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         this.configureViewModel();
         this.configureRecyclerView();
+        mTask = new Task();
+        mTaskListMapper = new TaskListMapper();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -51,13 +59,11 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab_add_task)
     public void onFabClick() {
-        new AddTaskDialog(this, taskViewModel.getProjectsList(), taskViewModel).createDialog(this);
-
+        new AddTaskDialog(taskViewModel.getProjectsList(), taskViewModel).createDialog(this);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        taskViewModel.displaySorter(item.getItemId());
-        taskViewModel.sortTasks(taskViewModel.getTasksList().getValue());
+        taskViewModel.displaySorter(item.getItemId(), adapter);
         return super.onOptionsItemSelected(item);
     }
 
@@ -88,6 +94,4 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setVisibility(View.VISIBLE);
         }
     }
-
-
 }

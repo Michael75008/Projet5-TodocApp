@@ -11,18 +11,19 @@ import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.repositories.ProjectDataRepository;
 import com.example.todocapp.repositories.TaskDataRepository;
+import com.example.todocapp.ui.AddTaskDialog;
 import com.example.todocapp.utils.TaskListMapper;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
+public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, AddTaskDialog.Listener2 { //, listener 2
 
     private TaskDataRepository taskDataSource;
-    private  ProjectDataRepository projectDataSource;
-    private  TaskListMapper mTaskListMapper;
-    private  Executor executor;
+    private ProjectDataRepository projectDataSource;
+    private TaskListMapper mTaskListMapper;
+    private Executor executor;
     SortMethod mSortMethod = SortMethod.NONE;
 
     public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor, TaskListMapper taskListMapper) {
@@ -31,7 +32,9 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
         this.executor = executor;
         this.mTaskListMapper = taskListMapper;
     }
-    public TaskViewModel(){}
+
+    public TaskViewModel() {
+    }
 
     @Nullable
     private List<Project> projectList;
@@ -41,17 +44,13 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
 
 
     public void init() {
-        executor.execute(() -> tasksList = taskDataSource.getTasks());
         executor.execute(() -> projectList = projectDataSource.getProjects());
     }
 
-    public LiveData<List<Task>> updateTaskList() {
-        return taskDataSource.getTasks();
-    }
 
     public LiveData<List<Task>> getTasksList() {
         if (tasksList == null) {
-            tasksList = updateTaskList();
+            tasksList = taskDataSource.getTasks();
         }
         return tasksList;
     }
@@ -61,7 +60,7 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
     }
 
 
-    public void displaySorter (int id) {
+    public void displaySorter(int id, TaskAdapter adapter) {
         if (id == R.id.filter_alphabetical) {
             mSortMethod = SortMethod.ALPHABETICAL;
         } else if (id == R.id.filter_alphabetical_inverted) {
@@ -71,10 +70,10 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
         } else if (id == R.id.filter_recent_first) {
             mSortMethod = SortMethod.RECENT_FIRST;
         }
-        updateTaskList();
+        getTasksOnUi(tasksList.getValue(), adapter);
     }
 
-    public void sortTasks(List<Task> tasks){
+    public void sortTasks(List<Task> tasks) {
         switch (mSortMethod) {
             case ALPHABETICAL:
                 Collections.sort(tasks, new Task.TaskAZComparator());
@@ -93,24 +92,10 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
     }
 
     public List<TaskOnUI> getTasksOnUi(List<Task> tasks, TaskAdapter adapter) {
-        switch (mSortMethod) {
-            case ALPHABETICAL:
-                Collections.sort(tasks, new Task.TaskAZComparator());
-                break;
-            case ALPHABETICAL_INVERTED:
-                Collections.sort(tasks, new Task.TaskZAComparator());
-                break;
-            case RECENT_FIRST:
-                Collections.sort(tasks, new Task.TaskRecentComparator());
-                break;
-            case OLD_FIRST:
-                Collections.sort(tasks, new Task.TaskOldComparator());
-                break;
-        }
+        sortTasks(tasks);
         adapter.updateData(mTaskListMapper.getTaskAsTaskOnUiList(tasks, projectList));
-        //trier la liste avec sortmethod, puis update (int, adapter)
-        return mTaskListMapper.getTaskAsTaskOnUiList(tasks,projectList);
-}
+        return mTaskListMapper.getTaskAsTaskOnUiList(tasks, projectList);
+    }
 
     public void createTask(Task task) {
         executor.execute(() -> taskDataSource.createTask(task));
@@ -123,5 +108,10 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener {
     @Override
     public void onClickDeleteButton(TaskOnUI taskOnUI) {
         deleteTask(taskOnUI.getTaskId());
+    }
+
+    @Override
+    public void onClickAddTaskButton(TaskOnUI taskOnUI) {
+        createTask(mTaskListMapper.getTaskFromTaskUi(taskOnUI, projectList));
     }
 }
