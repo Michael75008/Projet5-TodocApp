@@ -13,7 +13,7 @@ import java.util.Comparator;
 public class Task {
 
     /**
-     * The unique identifier of the task
+     * The unique identifier of the task (auto)
      */
     @PrimaryKey(autoGenerate = true)
     private int taskId;
@@ -22,7 +22,7 @@ public class Task {
      * The unique identifier of the project associated to the task
      */
     @NonNull
-    private long projectId;
+    private int projectId;
 
     /**
      * The name of the task
@@ -35,7 +35,9 @@ public class Task {
     @NonNull
     private long creationTimestamp;
 
-    public Task(int taskId, long projectId, String name, long creationTimestamp) {
+    // Constructors
+
+    public Task(int taskId, int projectId, String name, long creationTimestamp) {
         this.taskId = taskId;
         this.projectId = projectId;
         this.name = name;
@@ -43,53 +45,55 @@ public class Task {
     }
 
     @Ignore
-    public Task() {
+    public Task() { }
 
-    }
+
+    // Getters
 
     public int getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
-    }
-
-    public long getProjectId() {
+    public int getProjectId() {
         return projectId;
-    }
-
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public long getCreationTimestamp() {
         return creationTimestamp;
+    }
+
+    // Setters
+
+    public void setProjectId(int projectId) { this.projectId = projectId; }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setCreationTimestamp(long creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
     }
 
-    // --- UTILS ---
-    public static Task fromContentValues(ContentValues values) {
-        final Task task = new Task();
-        if (values.containsKey("taskId")) task.setTaskId(values.getAsInteger("taskId"));
-        if (values.containsKey("name")) task.setName(values.getAsString("name"));
-        if (values.containsKey("projectId")) task.setProjectId(values.getAsLong("projectId"));
-        if (values.containsKey("creationTime"))
-            task.setCreationTimestamp(values.getAsLong("creationTime"));
-        return task;
+    //Method creating new Task based on content values process
+
+    public ContentValues toContentValue(){
+        final ContentValues contentValues = new ContentValues();
+        contentValues.put("taskId", this.taskId);
+        contentValues.put("name", this.name);
+        contentValues.put("projectId", this.projectId);
+        contentValues.put("creationTimeStamp", this.creationTimestamp);
+        return contentValues;
     }
 
+    // Comparators
+
+    /**
+     * Comparator to sort task from A to Z
+     */
     public static class TaskAZComparator implements Comparator<Task> {
         @Override
         public int compare(Task left, Task right) {

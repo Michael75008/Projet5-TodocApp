@@ -1,6 +1,5 @@
 package com.example.todocapp.todolist;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -18,13 +17,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, AddTaskDialog.Listener2 { //, listener 2
+public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, AddTaskDialog.Listener2 {
+
+    // For init
 
     private TaskDataRepository taskDataSource;
     private ProjectDataRepository projectDataSource;
     private TaskListMapper mTaskListMapper;
     private Executor executor;
+
+    private List<Project> projectList;
+    private LiveData<List<Task>> tasksList;
+
     SortMethod mSortMethod = SortMethod.NONE;
+
+    // Constructor
 
     public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor, TaskListMapper taskListMapper) {
         this.taskDataSource = taskDataSource;
@@ -33,32 +40,17 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
         this.mTaskListMapper = taskListMapper;
     }
 
-    public TaskViewModel() {
-    }
+    // Initialisation of task list and project list
 
-    @Nullable
-    private List<Project> projectList;
-
-    @Nullable
-    private LiveData<List<Task>> tasksList;
-
-
-    public void init() {
+    public LiveData<List<Task>> initLists() {
         executor.execute(() -> projectList = projectDataSource.getProjects());
-    }
-
-
-    public LiveData<List<Task>> getTasksList() {
         if (tasksList == null) {
             tasksList = taskDataSource.getTasks();
         }
         return tasksList;
     }
 
-    public List<Project> getProjectsList() {
-        return projectList;
-    }
-
+    // Display sorter with id ref
 
     public void displaySorter(int id, TaskAdapter adapter) {
         if (id == R.id.filter_alphabetical) {
@@ -72,6 +64,8 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
         }
         getTasksOnUi(tasksList.getValue(), adapter);
     }
+
+    // Sort methods for each case
 
     public void sortTasks(List<Task> tasks) {
         switch (mSortMethod) {
@@ -87,15 +81,24 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
             case OLD_FIRST:
                 Collections.sort(tasks, new Task.TaskOldComparator());
                 break;
-
         }
     }
+
+    // Get method for project list
+
+    public List<Project> getProjectsList() {
+        return projectList;
+    }
+
+    // Get method for TaskOnUi list
 
     public List<TaskOnUI> getTasksOnUi(List<Task> tasks, TaskAdapter adapter) {
         sortTasks(tasks);
         adapter.updateData(mTaskListMapper.getTaskAsTaskOnUiList(tasks, projectList));
         return mTaskListMapper.getTaskAsTaskOnUiList(tasks, projectList);
     }
+
+    // Task's methods for create and delete task
 
     public void createTask(Task task) {
         executor.execute(() -> taskDataSource.createTask(task));
@@ -104,6 +107,8 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
     public void deleteTask(int taskId) {
         executor.execute(() -> taskDataSource.deleteTask(taskId));
     }
+
+    // OnClick implementations
 
     @Override
     public void onClickDeleteButton(TaskOnUI taskOnUI) {

@@ -1,10 +1,11 @@
 package com.example.todocapp.models;
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
+
 import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 @Entity
 public class Project {
@@ -13,7 +14,7 @@ public class Project {
      * The unique identifier of the project
      */
     @PrimaryKey
-    private long projectId;
+    private int projectId;
 
     /**
      * The name of the project
@@ -27,11 +28,9 @@ public class Project {
     @NonNull
     private int color;
 
-    /**
-     * Instantiates a new Project
-     */
+    // Constructors
 
-    public Project(long projectId, String name, int color) {
+    public Project(int projectId, String name, int color) {
         this.projectId = projectId;
         this.name = name;
         this.color = color;
@@ -39,17 +38,11 @@ public class Project {
 
     @Ignore
     public Project() {
-
     }
 
-    //GETTER
+    // Getters
 
-
-    public long getProjectId() {
-        return projectId;
-    }
-
-    public long getId() {
+    public int getProjectId() {
         return projectId;
     }
 
@@ -61,14 +54,10 @@ public class Project {
         return color;
     }
 
-    //SETTER
+    // Setters
 
-    public void setProjectId(long projectId) {
+    public void setProjectId(int projectId) {
         this.projectId = projectId;
-    }
-
-    public void setId(long id) {
-        this.projectId = id;
     }
 
     public void setName(String name) {
@@ -79,12 +68,18 @@ public class Project {
         this.color = color;
     }
 
-    // --- UTILS ---
-    public static Project fromContentValues(ContentValues values) {
-        final Project project = new Project();
-        if (values.containsKey("projectName")) project.setName(values.getAsString("projectName"));
-        if (values.containsKey("projectColor")) project.setColor(values.getAsInteger("projectColor"));
-        if(values.containsKey("projectId")) project.setId(values.getAsLong("projectId"));
-        return project;
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    //Method creating new Project based on content values process
+    public ContentValues toContentValue() {
+        final ContentValues contentValues = new ContentValues();
+        contentValues.put("projectId", this.projectId);
+        contentValues.put("name", this.name);
+        contentValues.put("color", this.color);
+        return contentValues;
     }
 }

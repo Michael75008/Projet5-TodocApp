@@ -19,8 +19,12 @@ import butterknife.ButterKnife;
 
 public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+    // For init
+
     private WeakReference<TaskAdapter.Listener> callbackWeakRef;
     public TaskOnUI sTaskOnUI;
+
+    // BindViews
 
     @BindView(R.id.img_delete)
     AppCompatImageButton imgDelete;
@@ -31,10 +35,14 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     @BindView(R.id.img_project)
     AppCompatImageView imgProject;
 
+    // Constructor
+
     public TaskViewHolder(View taskView) {
         super(taskView);
         ButterKnife.bind(this, taskView);
     }
+
+    // Update method to fix view of taskOnUi and WeakRef init
 
     @SuppressLint("RestrictedApi")
     public void updateWithTask(TaskOnUI task, TaskAdapter.Listener callback) {
@@ -45,6 +53,8 @@ public class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         this.lblProjectName.setText(task.getProjectName());
         this.callbackWeakRef = new WeakReference<>(callback);
     }
+
+    // OnClick delete button where we call our callback throw our WeakRef
 
     @Override
     public void onClick(View v) {

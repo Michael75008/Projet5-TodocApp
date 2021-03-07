@@ -13,10 +13,14 @@ import java.util.concurrent.Executor;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
+    // For init our design pattern
+
     private final TaskDataRepository taskDataSource;
     private final ProjectDataRepository projectDataSource;
     private final Executor executor;
     private final TaskListMapper mTaskListMapper;
+
+    // Constructor
 
     public ViewModelFactory(TaskDataRepository taskDataRepository, ProjectDataRepository projectDataRepository, Executor executor, TaskListMapper taskListMapper) {
         this.taskDataSource = taskDataRepository;
@@ -24,6 +28,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.executor = executor;
         this.mTaskListMapper = taskListMapper;
     }
+
+    // Instantiation of our ViewModel throw ViewModelFactory
 
     @NonNull
     @Override

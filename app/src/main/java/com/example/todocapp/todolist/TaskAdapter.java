@@ -16,21 +16,25 @@ import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
 
-    //CALLBACK
+    // CallBack Interface for delete button
+
     public interface Listener {
         void onClickDeleteButton(TaskOnUI taskOnUI);
     }
 
+    // For init
+
     private final Listener callback;
-    /**
-     * The list of tasks the adapter deals with
-     */
     private List<TaskOnUI> tasksOnUi;
+
+    // Constructor
 
     public TaskAdapter(Listener callback) {
         this.callback = callback;
         this.tasksOnUi = new ArrayList<>();
     }
+
+    // OnCreate method to define view
 
     @NonNull
     public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -41,6 +45,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
         return new TaskViewHolder(view);
     }
 
+    // OnBind method to join data to view
+
     @Override
     public void onBindViewHolder(TaskViewHolder taskViewHolder, int position) {
         taskViewHolder.updateWithTask(this.tasksOnUi.get(position), this.callback);
@@ -50,6 +56,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder> {
     public int getItemCount() {
         return this.tasksOnUi.size();
     }
+
+    // Updates list of TaskOnUi's when change occurs
 
     public void updateData(List<TaskOnUI> tasks) {
         this.tasksOnUi = tasks;

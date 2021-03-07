@@ -5,13 +5,16 @@ import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TaskListMapper {
 
-    public TaskListMapper() {
-    }
+    // Constructor
+
+    public TaskListMapper() {}
+
+    // Get task's list and convert it on a TaskOnUi's list
 
     public List<TaskOnUI> getTaskAsTaskOnUiList(List<Task> tasksList, List<Project> projectList) {
         List<TaskOnUI> currentTasks = new ArrayList<>();
@@ -20,7 +23,7 @@ public class TaskListMapper {
             Task task = tasksList.get(i);
             for (int i2 = 0; i2 < projectList.size(); i2++) {
                 Project project = projectList.get(i2);
-                if (project.getId() == task.getProjectId()) {
+                if (project.getProjectId() == task.getProjectId()) {
                     TaskOnUI taskOnUI = new TaskOnUI();
                     taskOnUI.setTaskId(task.getTaskId());
                     taskOnUI.setTaskName(task.getName());
@@ -33,15 +36,17 @@ public class TaskListMapper {
         return currentTasks;
     }
 
+    // Get taskOnUi and convert it on a Task
+
     public Task getTaskFromTaskUi(TaskOnUI taskOnUI, List<Project> projectList) {
         Task task = new Task();
+        task.setCreationTimestamp(new Date().getTime());
         task.setName(taskOnUI.getTaskName());
         for (int i2 = 0; i2 < projectList.size(); i2++) {
             Project project = projectList.get(i2);
-            if (project.getName() == taskOnUI.getProjectName()) {
+            if (project.getName().equals(taskOnUI.getProjectName())) {
                 task.setProjectId(project.getProjectId());
             }
-            task.setCreationTimestamp(Calendar.getInstance().getTime().getTime());
         }
         return task;
     }

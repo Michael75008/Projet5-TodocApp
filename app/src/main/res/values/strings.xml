@@ -29,7 +29,9 @@
 
     <string name="select_project">Selectionner un projet</string>
 
-    <string name="empty_text" />
+    <string name="add_it">Ajouter</string>
+
+    <string name="fake_task">Donner à manger au chien</string>
 
 
 </resources>

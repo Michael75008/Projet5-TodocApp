@@ -15,10 +15,8 @@ import com.example.todocapp.R;
 import com.example.todocapp.injections.Injection;
 import com.example.todocapp.injections.ViewModelFactory;
 import com.example.todocapp.models.Task;
-import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.todolist.TaskAdapter;
 import com.example.todocapp.todolist.TaskViewModel;
-import com.example.todocapp.utils.TaskListMapper;
 
 import java.util.List;
 
@@ -33,13 +31,10 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.lbl_no_task)
     TextView mLblNoTasks;
 
+    // For init
 
-    private TaskListMapper mTaskListMapper;
     private TaskViewModel taskViewModel;
     private TaskAdapter adapter;
-    private Task mTask;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +43,13 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         this.configureViewModel();
         this.configureRecyclerView();
-        mTask = new Task();
-        mTaskListMapper = new TaskListMapper();
     }
+
+    // Menu configuration
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actions, menu);
         return true;
-    }
-
-    @OnClick(R.id.fab_add_task)
-    public void onFabClick() {
-        new AddTaskDialog(taskViewModel.getProjectsList(), taskViewModel).createDialog(this);
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -67,11 +57,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // ViewModel configuration
+
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.taskViewModel = new ViewModelProvider(this, mViewModelFactory).get(TaskViewModel.class);
-        this.taskViewModel.init();
-        taskViewModel.getTasksList().observe(this, this::taskObserver);
+        taskViewModel.initLists().observe(this, this::taskObserver);
     }
 
     private void taskObserver(List<Task> tasks) {
@@ -79,11 +70,15 @@ public class MainActivity extends AppCompatActivity {
         adapter.updateData(taskViewModel.getTasksOnUi(tasks, adapter));
     }
 
+    // RecyclerView configuration
+
     private void configureRecyclerView() {
         this.adapter = new TaskAdapter(taskViewModel);
         this.recyclerView.setAdapter(this.adapter);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
+    // Empty list icon visibility throw boolean
 
     private void setVisibility(boolean isVisible) {
         if (isVisible) {
@@ -93,5 +88,10 @@ public class MainActivity extends AppCompatActivity {
             mLblNoTasks.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
         }
+    }
+
+    @OnClick(R.id.fab_add_task)
+    public void onFabClick() {
+        new AddTaskDialog(taskViewModel.getProjectsList(), taskViewModel).createDialog(this);
     }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linear_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,23 +14,18 @@
         android:layout_height="wrap_content"
         android:hint="@string/task_name_hint"
         android:importantForAutofill="no"
-        android:inputType="textAutoComplete"
-        tools:ignore="UnusedAttribute" />
+        android:inputType="textCapSentences" />
 
     <Spinner
         android:id="@+id/project_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:paddingBottom="12dp"
-        android:textSize="14sp"
-        android:layout_marginBottom="12dp"
-        android:visibility="visible"
-        android:spinnerMode="dropdown"
-        />
+        android:layout_marginBottom="8dp"
+        android:textSize="14sp" />
 
     <View
-        android:id="@+id/viewr"
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
