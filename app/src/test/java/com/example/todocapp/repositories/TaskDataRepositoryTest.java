@@ -2,6 +2,7 @@ package com.example.todocapp.repositories;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.todocapp.database.dao.ProjectDatabase;
 import com.example.todocapp.database.dao.TaskDao;
@@ -14,7 +15,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.util.Date;
 import java.util.List;
@@ -24,7 +24,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.example.todocapp.database.dao.ProjectDatabase.prepopulateDataBase;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class TaskDataRepositoryTest {
 
     // FOR DATA
@@ -54,8 +54,8 @@ public class TaskDataRepositoryTest {
         TaskDao taskDao = database.taskDao();
         // Create a new task data repository throw Dao
         TaskDataRepository taskDataRepository = new TaskDataRepository(taskDao);
-        // Get our list of tasks from DB throw Dao, task list expected
-        List<Task> taskListExpected = LiveDataTestUtil.getValue(taskDao.getTasks());
+        // Get our list of tasks from DB throw Repo, task list expected
+        List<Task> taskListExpected = LiveDataTestUtil.getValue(taskDataRepository.getTasks());
         // Get our list of tasks from DB
         List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
         // Check if we find the same list size for both task list from repo and from task list db

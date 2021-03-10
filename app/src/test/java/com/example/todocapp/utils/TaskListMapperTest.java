@@ -2,6 +2,7 @@ package com.example.todocapp.utils;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.todocapp.database.dao.ProjectDatabase;
 import com.example.todocapp.models.Project;
@@ -13,7 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.example.todocapp.database.dao.ProjectDatabase.prepopulateDataBase;
 import static org.junit.Assert.assertEquals;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class TaskListMapperTest {
 
     // FOR DATA

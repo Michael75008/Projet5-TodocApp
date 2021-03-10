@@ -2,6 +2,7 @@ package com.example.todocapp.database.dao;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.todocapp.models.Task;
 import com.example.todocapp.utils.LiveDataTestUtil;
@@ -11,7 +12,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.util.Date;
 import java.util.List;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class TaskDaoTest  {
 
     // FOR DATA
