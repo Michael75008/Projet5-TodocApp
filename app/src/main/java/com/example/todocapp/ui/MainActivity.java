@@ -15,7 +15,6 @@ import com.example.todocapp.R;
 import com.example.todocapp.injections.Injection;
 import com.example.todocapp.injections.ViewModelFactory;
 import com.example.todocapp.models.Task;
-import com.example.todocapp.todolist.TaskAdapter;
 import com.example.todocapp.todolist.TaskViewModel;
 
 import java.util.List;

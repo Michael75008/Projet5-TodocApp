@@ -11,6 +11,7 @@ import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.repositories.ProjectDataRepository;
 import com.example.todocapp.repositories.TaskDataRepository;
 import com.example.todocapp.ui.AddTaskDialog;
+import com.example.todocapp.ui.TaskAdapter;
 import com.example.todocapp.utils.TaskListMapper;
 
 import java.util.Collections;
@@ -67,7 +68,7 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
 
     // Sort methods for each case
 
-    public void sortTasks(List<Task> tasks) {
+    private void sortTasks(List<Task> tasks) {
         switch (mSortMethod) {
             case ALPHABETICAL:
                 Collections.sort(tasks, new Task.TaskAZComparator());
@@ -100,11 +101,11 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
 
     // Task's methods for create and delete task
 
-    public void createTask(Task task) {
+    private void createTask(Task task) {
         executor.execute(() -> taskDataSource.createTask(task));
     }
 
-    public void deleteTask(int taskId) {
+    private void deleteTask(int taskId) {
         executor.execute(() -> taskDataSource.deleteTask(taskId));
     }
 

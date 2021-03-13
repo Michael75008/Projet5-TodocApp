@@ -1,4 +1,4 @@
-package com.example.todocapp.todolist;
+package com.example.todocapp.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;

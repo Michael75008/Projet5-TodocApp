@@ -1,4 +1,4 @@
-package com.example.todocapp.todolist;
+package com.example.todocapp.ui;
 
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
