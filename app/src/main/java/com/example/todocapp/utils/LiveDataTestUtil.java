@@ -25,6 +25,7 @@ public class LiveDataTestUtil {
         //noinspection unchecked
         return (T) data[0];
     }
+
 }
 
 

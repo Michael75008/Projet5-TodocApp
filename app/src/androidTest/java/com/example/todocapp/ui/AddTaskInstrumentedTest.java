@@ -1,18 +1,11 @@
 package com.example.todocapp.ui;
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.todocapp.R;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.todocapp.utils.RecyclerViewMatcher.childAtPosition;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 
@@ -104,27 +98,12 @@ public class AddTaskInstrumentedTest {
                         isDisplayed()));
         appCompatSpinner.perform(click());
         // Should display our 3 project options on screen
-          onView(withText(containsString("Projet Tartampion"))).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
-          onView(withText(containsString("Projet Lucidia"))).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
-          onView(withText(containsString("Projet Circus"))).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+          checkViewWithString("Projet Tartampion");
+          checkViewWithString("Projet Lucidia");
+          checkViewWithString("Projet Circus");
       }
 
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
-    }
+      private void checkViewWithString(String name) {
+          onView(withText(containsString(name))).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+      }
 }

@@ -1,10 +1,5 @@
 package com.example.todocapp.ui;
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -12,9 +7,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.todocapp.R;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.todocapp.utils.RecyclerViewMatcher.childAtPosition;
 import static org.hamcrest.Matchers.allOf;
 
 
@@ -59,27 +52,6 @@ public class DeleteTaskInstrumentedTest {
     }
 
     @AfterClass
-    public static void beforeClass() {
-        ApplicationProvider.getApplicationContext().deleteDatabase("MyDatabase.db");
+    public static void afterClass() {
     }
-
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
-    }
-
 }
