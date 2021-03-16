@@ -29,40 +29,39 @@ public class MainActivityInstrumentedTest {
     public void myTaskList_sortAction_sortTasksFromAtoZ() {
         clickOnFilterWithText(R.string.sort_alphabetical);
 
-        checkRecyclerViewAtPosition(0, "A");
-        checkRecyclerViewAtPosition(1, "B");
-        checkRecyclerViewAtPosition(2, "C");
+        checkTextViewAtPosition(0, "A");
+        checkTextViewAtPosition(1, "B");
+        checkTextViewAtPosition(2, "C");
     }
 
     @Test
     public void myTaskList_sortAction_sortTasksFromZtoA() {
         clickOnFilterWithText(R.string.sort_alphabetical_invert);
 
-        checkRecyclerViewAtPosition(0, "C");
-        checkRecyclerViewAtPosition(1, "B");
-        checkRecyclerViewAtPosition(2, "A");
+        checkTextViewAtPosition(0, "C");
+        checkTextViewAtPosition(1, "B");
+        checkTextViewAtPosition(2, "A");
     }
 
     @Test
     public void myTaskList_sortAction_sortTasksFromRecentToOlder() {
         clickOnFilterWithText(R.string.sort_recent_first);
 
-        checkRecyclerViewAtPosition(0, "C");
-        checkRecyclerViewAtPosition(1, "B");
-        checkRecyclerViewAtPosition(2, "A");
+        checkTextViewAtPosition(0, "C");
+        checkTextViewAtPosition(1, "B");
+        checkTextViewAtPosition(2, "A");
     }
-
 
     @Test
     public void myTaskList_sortAction_sortTasksFromOlderToRecent() {
         clickOnFilterWithText(R.string.sort_oldest_first);
 
-        checkRecyclerViewAtPosition(2, "C");
-        checkRecyclerViewAtPosition(1, "B");
-        checkRecyclerViewAtPosition(0, "A");
+        checkTextViewAtPosition(2, "C");
+        checkTextViewAtPosition(1, "B");
+        checkTextViewAtPosition(0, "A");
     }
 
-    private void checkRecyclerViewAtPosition(int position, String text) {
+    private void checkTextViewAtPosition(int position, String text) {
         onView(withRecyclerView(R.id.list_tasks).atPositionOnView(position, R.id.lbl_task_name))
                 .check(matches(withText(text)));
     }

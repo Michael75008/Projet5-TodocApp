@@ -1,6 +1,5 @@
 package com.example.todocapp.ui;
 
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -33,77 +32,51 @@ public class AddTaskInstrumentedTest {
 
     @Test
     public void myTasksList_createTaskAction_shouldAddNewTaskToUi() {
-        //Click on fab to add new task
-        ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab_add_task), withContentDescription("Ajouter une tâche"),
-                        isDisplayed()));
-        floatingActionButton.perform(click());
+        openAddTaskDialog();
+        onView(allOf(withId(R.id.txt_task_name), isDisplayed())).perform(replaceText("D"), closeSoftKeyboard());
+        onView(allOf(withId(android.R.id.button1), withText("Ajouter"), isDisplayed())).perform(scrollTo(), click());
 
-        //Enter the name of the new task "Courir deux heures"
-        ViewInteraction appCompatEditText = onView(
-                allOf(withId(R.id.txt_task_name),
-                        childAtPosition(
-                                allOf(withId(R.id.linear_layout),
-                                        childAtPosition(
-                                                withId(R.id.custom),
-                                                0)),
-                                0),
-                        isDisplayed()));
+        onView(allOf(withText("D"), isDisplayed())).check(matches(isDisplayed()));
 
-        appCompatEditText.perform(replaceText("D"), closeSoftKeyboard());
-        //Click on add button to add new task to the list
-        ViewInteraction materialButton = onView(
-                allOf(withId(android.R.id.button1), withText("Ajouter"),
-                       isDisplayed()));
-        materialButton.perform(scrollTo(), click());
-        //Check if we found our new task on screen
-        ViewInteraction textView = onView(
-                allOf(withText("D"),
-                        isDisplayed()));
-        textView.check(matches(isDisplayed()));
-        // Delete action on our new task
-        ViewInteraction appCompatImageButton = onView(
-                allOf(withId(R.id.img_delete),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.list_tasks),
-                                        3),
-                                1),
-                        isDisplayed()));
-        appCompatImageButton.perform(click());
-
+        onClickDeleteButtonAtIndex(3);
     }
 
-      @Test
+    @Test
     public void myTaskList_createTaskAction_shouldDisplayProjectChoices() {
-        // Click on fab to create a new task
-        ViewInteraction floatingActionButton = onView(
-                allOf(withId(R.id.fab_add_task), withContentDescription("Ajouter une tâche"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(android.R.id.content),
-                                        0),
-                                2),
-                        isDisplayed()));
-        floatingActionButton.perform(click());
-        // Click on spinner to see options for task's project affectation
-        ViewInteraction appCompatSpinner = onView(
-                allOf(withId(R.id.project_spinner),
-                        childAtPosition(
-                                allOf(withId(R.id.linear_layout),
-                                        childAtPosition(
-                                                withId(R.id.custom),
-                                                0)),
-                                1),
-                        isDisplayed()));
-        appCompatSpinner.perform(click());
-        // Should display our 3 project options on screen
-          checkViewWithString("Projet Tartampion");
-          checkViewWithString("Projet Lucidia");
-          checkViewWithString("Projet Circus");
-      }
+        openAddTaskDialog();
+        onView(allOf(withId(R.id.project_spinner), isDisplayed())).perform(click());
 
-      private void checkViewWithString(String name) {
-          onView(withText(containsString(name))).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
-      }
+        checkViewWithString("Projet Tartampion");
+        checkViewWithString("Projet Lucidia");
+        checkViewWithString("Projet Circus");
+    }
+
+    @Test
+    public void myTaskList_createTaskAction_shouldDisplayErrorMessageWhenNoName() {
+        openAddTaskDialog();
+        onView(allOf(withId(android.R.id.button1), withText("Ajouter"))).perform(scrollTo(), click());
+
+        onView(allOf(withId(R.id.txt_task_name), isDisplayed())).perform(click());
+
+        checkViewWithString("Le nom de la tâche doit être renseigné");
+    }
+
+
+    private void checkViewWithString(String name) {
+        onView(withText(containsString(name))).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+    }
+
+    private void openAddTaskDialog() {
+        onView(allOf(withId(R.id.fab_add_task), withContentDescription("Ajouter une tâche"),
+                isDisplayed())).perform(click());
+    }
+
+    private void onClickDeleteButtonAtIndex(int position) {
+        onView(allOf(withId(R.id.img_delete), childAtPosition(
+                childAtPosition(
+                        withId(R.id.list_tasks),
+                        position),
+                1),
+                isDisplayed())).perform(click());
+    }
 }
