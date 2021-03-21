@@ -1,7 +1,6 @@
 package com.example.todocapp.database.dao;
 
 import android.content.ContentValues;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.room.OnConflictStrategy;
@@ -28,7 +27,6 @@ public final class ProjectDaoTest {
 
     // FOR DATA
     private ProjectDatabase database;
-    Context mContext;
     // DATA SET FOR TEST
     private static int PROJECTLIST_SIZE = 3;
 
@@ -56,9 +54,9 @@ public final class ProjectDaoTest {
             @Override
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
-                ContentValues contentValues3 = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1).toContentValue();
-                ContentValues contentValues2 = new Project((int) 2L, "Projet Lucidia", 0xFFB4CDBA).toContentValue();
-                ContentValues contentValues = new Project((int) 3L, "Projet Circus", 0xFFA3CED2).toContentValue();
+                ContentValues contentValues3 = new Project((int) 1L, "Projet 1", 0xFFEADAD1).toContentValue();
+                ContentValues contentValues2 = new Project((int) 2L, "Projet 2", 0xFFB4CDBA).toContentValue();
+                ContentValues contentValues = new Project((int) 3L, "Projet 3", 0xFFA3CED2).toContentValue();
 
                 db.insert("Project", OnConflictStrategy.IGNORE, contentValues);
                 db.insert("Project", OnConflictStrategy.IGNORE, contentValues2);

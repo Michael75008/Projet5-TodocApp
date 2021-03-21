@@ -101,8 +101,8 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
     }
 
     // Task's methods for create and delete task
-
-    private void createTask(Task task) {
+    @VisibleForTesting
+    public void createTask(Task task) {
         executor.execute(() -> taskDataSource.createTask(task));
     }
 

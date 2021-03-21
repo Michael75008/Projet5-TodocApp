@@ -20,6 +20,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
@@ -31,12 +33,8 @@ public class TaskDataRepositoryTest {
     @Mock
     private TaskDataRepository sut;
 
-
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
-
-    public TaskDataRepositoryTest() {
-    }
 
     @Before
     public void initDb() {
@@ -44,64 +42,36 @@ public class TaskDataRepositoryTest {
         sut = new TaskDataRepository(taskDao);
     }
 
-
     @Test
     public void getTasksTest() throws InterruptedException {
         List<Task> tasks = new ArrayList<>();
         Task task = new Task(1, (int) 3L, "C", Calendar.getInstance().getTime().getTime());
+        tasks.add(task);
         MutableLiveData<List<Task>> fakeLiveData = new MutableLiveData<List<Task>>() {};
         fakeLiveData.setValue(tasks);
         when(taskDao.getTasks()).thenReturn(fakeLiveData);
 
-        sut.createTask(task);
-
         List<Task> result = LiveDataTestUtil.getValue(sut.getTasks());
-
-
 
         assertEquals(result.size(), tasks.size());
+        verify(taskDao, times(1)).getTasks();
     }
 
     @Test
-    public void createTaskTest() throws InterruptedException {
-        List<Task> tasks = new ArrayList<>();
+    public void createTaskTest() {
         Task task = new Task(1, (int) 3L, "C", Calendar.getInstance().getTime().getTime());
 
-        List<Task> result = LiveDataTestUtil.getValue(sut.getTasks());
+        sut.createTask(task);
 
-        assertEquals(1, result.size());
-
-
-
-/*
-        // Create single thread for task creation
-        executor = Injection.provideExecutor();
-        // Create DAO from DB
-        TaskDao taskDao = database.taskDao();
-        // Create a new task data repository throw Dao
-        TaskDataRepository taskDataRepository = new TaskDataRepository(taskDao);
-        // Create a new task with repo throw executor
-        executor.execute(() -> taskDataRepository.createTask(TASK_DEMO));
-        // Get our list of tasks from DB
-        List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Check if task list contains our element checking list size
-        assertEquals(TASKLIST_SIZE + 1, taskList.size());*/
+        verify(taskDao, times(1)).createTask(task);
     }
 
     @Test
-    public void deleteTaskTask() throws InterruptedException {
+    public void deleteTaskTask() {
+        Task task = new Task(1, (int) 3L, "C", Calendar.getInstance().getTime().getTime());
 
-      /*  // Create single thread for task creation
-        executor = Injection.provideExecutor();
-        // Create DAO from DB
-        TaskDao taskDao = database.taskDao();
-        // Create a new task data repository throw Dao
-        TaskDataRepository taskDataRepository = new TaskDataRepository(taskDao);
-        // Delete our new task with repo throw executor
-        executor.execute(() -> taskDataRepository.deleteTask(TASK_ID));
-        // Get our list of tasks from DB
-        List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Check if task list contains our element checking list size
-        assertEquals(TASKLIST_SIZE, taskList.size());*/
+        sut.deleteTask(task.getTaskId());
+
+        verify(taskDao, times(1)).deleteTask(task.getTaskId());
     }
 }

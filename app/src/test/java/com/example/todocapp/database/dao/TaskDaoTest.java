@@ -37,9 +37,7 @@ public class TaskDaoTest  {
     // FOR DATA
     private ProjectDatabase database;
     // DATA SET FOR TEST
-    private static int TASK_ID = 5;
     private static int TASKLIST_SIZE = 3;
-    private static Task TASK_DEMO = new Task(TASK_ID, 2, "Demo task name", new Date().getTime());
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -65,8 +63,9 @@ public class TaskDaoTest  {
 
     @Test
     public void createTaskAndGetItOnList() throws InterruptedException {
+        Task task = new Task(4, 2, "Demo task name", new Date().getTime());
         // Creates a new demo task
-        this.database.taskDao().createTask(TASK_DEMO);
+        this.database.taskDao().createTask(task);
         // Get task list from db
         List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
         // Assert that we added a new task to the list

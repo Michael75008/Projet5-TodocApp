@@ -1,22 +1,18 @@
 package com.example.todocapp.todolist;
 
-import android.content.Context;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelStore;
 import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.todocapp.database.dao.ProjectDao;
 import com.example.todocapp.database.dao.ProjectDatabase;
-import com.example.todocapp.injections.ViewModelFactory;
+import com.example.todocapp.database.dao.TaskDao;
 import com.example.todocapp.models.Project;
 import com.example.todocapp.models.SortMethod;
 import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
 import com.example.todocapp.repositories.TaskDataRepository;
-import com.example.todocapp.ui.TaskAdapter;
 import com.example.todocapp.utils.LiveDataTestUtil;
 import com.example.todocapp.utils.TaskListMapper;
 
@@ -27,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +46,7 @@ public class TaskViewModelTest {
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Mock
-    Context mContext;
+    private TaskDao taskDao;
 
     @Mock
     private ProjectDao projectDao;
@@ -59,15 +54,7 @@ public class TaskViewModelTest {
     @Mock
     private TaskDataRepository sut;
 
-
-    private ViewModelFactory mViewModelFactory;
-
     private TaskViewModel mTaskViewModel;
-
-
-    private WeakReference<TaskAdapter.Listener> callbackWeakRef;
-
-    ViewModelStore mViewModelStore;
 
     // FOR DATA
     private ProjectDatabase database;
@@ -170,6 +157,9 @@ public class TaskViewModelTest {
 
     @Test
     public void createTask() throws InterruptedException {
+        Task task = new Task(1, 2, "Demo task name", new Date().getTime());
+
+        mTaskViewModel.createTask(task);
 
     }
 
