@@ -1,5 +1,6 @@
 package com.example.todocapp.todolist;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -67,8 +68,8 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
     }
 
     // Sort methods for each case
-
-    private void sortTasks(List<Task> tasks) {
+    @VisibleForTesting
+    public void sortTasks(List<Task> tasks) {
         switch (mSortMethod) {
             case ALPHABETICAL:
                 Collections.sort(tasks, new Task.TaskAZComparator());

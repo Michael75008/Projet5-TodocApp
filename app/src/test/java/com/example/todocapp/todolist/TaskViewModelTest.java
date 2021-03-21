@@ -1,20 +1,25 @@
 package com.example.todocapp.todolist;
 
+import android.content.Context;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelStore;
 import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.todocapp.database.dao.ProjectDao;
 import com.example.todocapp.database.dao.ProjectDatabase;
+import com.example.todocapp.injections.ViewModelFactory;
 import com.example.todocapp.models.Project;
+import com.example.todocapp.models.SortMethod;
 import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
+import com.example.todocapp.repositories.TaskDataRepository;
 import com.example.todocapp.ui.TaskAdapter;
 import com.example.todocapp.utils.LiveDataTestUtil;
 import com.example.todocapp.utils.TaskListMapper;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,13 +28,21 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.example.todocapp.database.dao.ProjectDatabase.prepopulateDataBase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class TaskViewModelTest {
@@ -38,10 +51,19 @@ public class TaskViewModelTest {
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Mock
-    TaskAdapter mTaskAdapter;
+    Context mContext;
 
     @Mock
-    TaskViewModel mTaskViewModel;
+    private ProjectDao projectDao;
+
+    @Mock
+    private TaskDataRepository sut;
+
+
+    private ViewModelFactory mViewModelFactory;
+
+    private TaskViewModel mTaskViewModel;
+
 
     private WeakReference<TaskAdapter.Listener> callbackWeakRef;
 
@@ -58,20 +80,19 @@ public class TaskViewModelTest {
     private static int TASKLIST_SIZE = 3;
     private static int PROJECTLIST_SIZE = 3;
 
+
     @Before
     public void initDb() {
         MockitoAnnotations.initMocks(this);
-
         this.database =
                 Room.inMemoryDatabaseBuilder(getApplicationContext(), ProjectDatabase.class)
                         .allowMainThreadQueries()
                         .addCallback(prepopulateDataBase())
                         .build();
-    }
 
-    @After
-    public void closeDb() {
-        database.close();
+        mTaskViewModel = mock(TaskViewModel.class);
+        when(mTaskViewModel.initLists()).thenReturn(database.taskDao().getTasks());
+        when(mTaskViewModel.getProjectsList()).thenReturn(database.projectDao().getProjects());
     }
 
     @Test
@@ -98,18 +119,48 @@ public class TaskViewModelTest {
         // Get our list of tasks from DB
         List<Task> taskListFromDB = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
         // Check if task list contains our element checking list size
-        List<TaskOnUI> taskOnUIList = mTaskViewModel.getTasksOnUi(taskListFromDB, mTaskAdapter);
-
+/*
         assertEquals(TASKLIST_SIZE, taskOnUIList.size());
         assertEquals(taskListFromDB.get(0).getName(), taskOnUIList.get(0).getTaskName());
         assertEquals(taskListFromDB.get(1).getName(), taskOnUIList.get(1).getTaskName());
-        assertEquals(taskListFromDB.get(2).getName(), taskOnUIList.get(2).getTaskName());
+        assertEquals(taskListFromDB.get(2).getName(), taskOnUIList.get(2).getTaskName());*/
     }
+
+    @Test
+    public void displaySorter_sortAlphabetical() {
+        List<Task> tasks = new ArrayList<>();
+        Task task1 = new Task(1, (int) 1L, "A", mDate("01-01-2021 12:00:00").getTime());
+        Task task2 = new Task(2, (int) 1L, "B", mDate("02-01-2021 12:00:00").getTime());
+        tasks.add(task2);
+        tasks.add(task1);
+
+        mTaskViewModel.mSortMethod = SortMethod.ALPHABETICAL;
+        mTaskViewModel.sortTasks(tasks);
+
+        assertSame(tasks.get(0), task1);
+        assertSame(tasks.get(1), task2);
+
+    }
+
+    @Test
+    public void displaySorter_sortAlphabeticalInverted() {
+        List<Task> tasks = new ArrayList<>();
+        Task task1 = new Task(1, (int) 1L, "A", mDate("01-01-2021 12:00:00").getTime());
+        Task task2 = new Task(2, (int) 1L, "B", mDate("02-01-2021 12:00:00").getTime());
+        tasks.add(task1);
+        tasks.add(task2);
+
+        mTaskViewModel.mSortMethod = SortMethod.ALPHABETICAL_INVERTED;
+        mTaskViewModel.sortTasks(tasks);
+
+        assertSame(tasks.get(1), task1);
+        assertSame(tasks.get(0), task2);
+    }
+
 
     @Test
     public void deleteTask() throws InterruptedException {
         // Delete a task throws viewmodel method
-        mTaskViewModel.deleteTask(TASK_ID);
         // Get our list of tasks from DB
         List<Task> taskListFromDB = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
         // Check we delete one element of the list, should find one element less
@@ -119,11 +170,7 @@ public class TaskViewModelTest {
 
     @Test
     public void createTask() throws InterruptedException {
-        mTaskViewModel.createTask(TASK_DEMO);
-        // Get our list of tasks from DB
-        List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Check if task list contains our element checking list size
-        assertEquals(TASKLIST_SIZE + 1, mTaskViewModel.getTasksOnUi(taskList, mTaskAdapter).size());
+
     }
 
     @Test
@@ -134,5 +181,16 @@ public class TaskViewModelTest {
     @Test
     public void onClickAddTaskButton() {
         mTaskViewModel.onClickAddTaskButton(TASK_ON_UI_DEMO);
+    }
+
+    private static Date mDate(String date) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE);
+        try {
+            calendar.setTime(sdf.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return calendar.getTime();
     }
 }

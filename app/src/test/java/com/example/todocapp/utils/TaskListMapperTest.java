@@ -1,97 +1,87 @@
 package com.example.todocapp.utils;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.room.Room;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.example.todocapp.database.dao.ProjectDatabase;
 import com.example.todocapp.models.Project;
 import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.example.todocapp.database.dao.ProjectDatabase.prepopulateDataBase;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(JUnit4.class)
 public class TaskListMapperTest {
 
-    // FOR DATA
-    private ProjectDatabase database;
-    // CLASS CALL
     private final TaskListMapper mTaskListMapper = new TaskListMapper();
 
-
-    @Rule
-    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
-
-    @Before
-    public void initDb() {
-        this.database =
-                Room.inMemoryDatabaseBuilder(getApplicationContext(), ProjectDatabase.class)
-                        .allowMainThreadQueries()
-                        .addCallback(prepopulateDataBase())
-                        .build();
-    }
-
     @Test
-    public void getTaskAsTaskOnUiListTest_shouldConvertTaskListOnTaskOnUiListBasedOnProjectAndTaskLists() throws InterruptedException {
-        // Get Project list from database
-        List<Project> projectList = this.database.projectDao().getProjects();
-        // Get our list of tasks from DB
-        List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
+    public void getTaskOnUiListFromTaskList_shouldReturnTaskOnUiList_taskListNullCase_shouldReturnListEvenWithNullTaskList() {
+        List<Project> projectList = new ArrayList<>();
+        List<Task> taskList = null;
 
         List<TaskOnUI> taskOnUIList = mTaskListMapper.getTaskAsTaskOnUiList(taskList, projectList);
-        // Check we have the same size for both lists, confirms that we update task list into new format
-        assertEquals(taskOnUIList.size(), taskList.size());
-        // Check we find the same task names
-        assertEquals(taskOnUIList.get(0).getTaskName(), taskList.get(0).getName());
-        assertEquals(taskOnUIList.get(1).getTaskName(), taskList.get(1).getName());
-        assertEquals(taskOnUIList.get(2).getTaskName(), taskList.get(2).getName());
-        // Check we find the same task ids
-        assertEquals(taskOnUIList.get(0).getTaskId(), taskList.get(0).getTaskId());
-        assertEquals(taskOnUIList.get(1).getTaskId(), taskList.get(1).getTaskId());
-        assertEquals(taskOnUIList.get(2).getTaskId(), taskList.get(2).getTaskId());
-        // Check we find the same project names and project colors
-        for (int i = 0; i < taskList.size(); i++) {
-            Task task = taskList.get(i);
-            for (int i2 = 0; i2 < projectList.size(); i2++) {
-                Project project = projectList.get(i2);
-                for (int i3 = 0; i3 < taskOnUIList.size(); i3++) {
-                    TaskOnUI taskOnUI = taskOnUIList.get(i);
-                    if (project.getProjectId() == task.getProjectId()) {
-                        assertEquals(project.getColor(), taskOnUI.getProjectColor());
-                        assertEquals(project.getName(), taskOnUI.getProjectName());
-                    }
-                }
-            }
-        }
+
+        assertNotNull(taskOnUIList);
     }
 
     @Test
-    public void getTaskFromTaskUi_shouldConvertTaskOnTaskOnUiBasedOnProjectListAndTaskOnUi() {
-        // Get Project list from database
-        List<Project> projectList = this.database.projectDao().getProjects();
-        // Create a new TaskOnUi with projectList reference at index 1
-        TaskOnUI taskOnUI = new TaskOnUI(4, projectList.get(1).getColor(), projectList.get(1).getName(), "taskNameDemo");
-        // Create a new Task with projectList and TaskOnUi references
-        Task task = mTaskListMapper.getTaskFromTaskUi(taskOnUI, projectList);
-        // Check if we find the same name in task and taskOnUi
-        assertEquals(task.getName(), taskOnUI.getTaskName());
-        // Check if we fin the same projectId in Task and Project at index 1
-        assertEquals(task.getProjectId(), projectList.get(1).getProjectId());
+    public void getTaskOnUiListFromTaskList_shouldReturnTaskOnUiList_taskListEqualZeroCase_shouldReturnListEvenWithEmptyTaskList() {
+        List<Project> projectList = new ArrayList<>();
+        List<Task> taskList = new ArrayList<>();
+
+        List<TaskOnUI> taskOnUIList = mTaskListMapper.getTaskAsTaskOnUiList(taskList, projectList);
+
+        assertEquals("check if we have size condition", 0, taskList.size());
+        assertNotNull(taskOnUIList);
     }
 
-    @After
-    public void closeDb() {
-        database.close();
+    @Test
+    public void getTaskFromTaskUi_shouldReturnTask_taskAndProjectIDsEqualsCase_shouldCreateNewElementWithSameRefs() {
+        List<Project> projectList = new ArrayList<>();
+        List<Task> taskList = new ArrayList<>();
+        Task task = new Task(1, 6, "X", Calendar.getInstance().getTime().getTime());
+        Project project = new Project(6, "Projet Tartampion", 0xFFEADAD1);
+        taskList.add(task);
+        projectList.add(project);
+
+        List<TaskOnUI> taskOnUIList = mTaskListMapper.getTaskAsTaskOnUiList(taskList, projectList);
+        TaskOnUI taskOnUI = taskOnUIList.get(0);
+
+        assertEquals("check if we have element creation on list", 1, taskOnUIList.size());
+        assertNotNull(taskOnUI);
+        assertEquals(task.getTaskId(), taskOnUI.getTaskId());
+        assertEquals(task.getName(), taskOnUI.getTaskName());
+        assertEquals(project.getColor(), taskOnUI.getProjectColor());
+        assertEquals(project.getName(), taskOnUI.getProjectName());
+    }
+
+    @Test
+    public void getTaskFromTaskUi_shouldReturnTask_taskOnUiNameEqualsTaskName_shouldCreateNewElementWithSameNameRefs() {
+        List<Project> projectList = new ArrayList<>();
+        TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "X");
+
+        Task task = mTaskListMapper.getTaskFromTaskUi(taskOnUI, projectList);
+
+        assertNotNull(task);
+        assertEquals(task.getName(), taskOnUI.getTaskName());
+    }
+
+    @Test
+    public void getTaskFromTaskUi_shouldReturnTask_taskOnUiProjectNameEqualsProjectName_shouldCreateNewElementWithSameProjectRefs() {
+        List<Project> projectList = new ArrayList<>();
+        Project project = new Project(6, "Projet Tartampion", 0xFFEADAD1);
+        projectList.add(project);
+        TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "X");
+
+        Task task = mTaskListMapper.getTaskFromTaskUi(taskOnUI, projectList);
+
+        assertEquals(project.getName(), taskOnUI.getProjectName());
+        assertEquals(task.getProjectId(), project.getProjectId());
     }
 }
