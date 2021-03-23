@@ -30,7 +30,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     }
 
     // Instantiation of our ViewModel throw ViewModelFactory
-
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {

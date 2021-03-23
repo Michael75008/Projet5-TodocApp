@@ -6,7 +6,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.todocapp.R;
 
-import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,10 +49,7 @@ public class DeleteTaskInstrumentedTest {
         onClickDeleteButtonAtIndex(0);
 
         onView(allOf(withId(R.id.lbl_no_task), withText("Tu n’as aucune tâche à traiter"))).check(matches(isDisplayed()));
-    }
 
-    @AfterClass
-    public static void afterTest() {
         createTaskOnUi("A");
         createTaskOnUi("B");
         createTaskOnUi("C");

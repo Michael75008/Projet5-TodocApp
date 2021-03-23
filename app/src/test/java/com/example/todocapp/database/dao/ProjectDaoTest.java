@@ -20,15 +20,14 @@ import java.util.List;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4.class)
 public final class ProjectDaoTest {
 
-    // FOR DATA
+    //For Data
     private ProjectDatabase database;
-    // DATA SET FOR TEST
-    private static int PROJECTLIST_SIZE = 3;
+    //Sets
+    private final int PROJECTLIST_SIZE = 3;
 
     @Before
     public void initDb() {
@@ -41,15 +40,12 @@ public final class ProjectDaoTest {
 
     @Test
     public void getProjects() {
-        // Get Project list from database
         List<Project> projectList = this.database.projectDao().getProjects();
-        // Assert that the list is not empty
-        assertFalse("list should not be empty", projectList.isEmpty());
-        // Assert that task list contains all the elements (3 projects) of database
+
         assertEquals("list should contain three projects", projectList.size(), PROJECTLIST_SIZE);
     }
 
-    private static RoomDatabase.Callback fakeDataBase() {
+    private RoomDatabase.Callback fakeDataBase() {
         return new RoomDatabase.Callback() {
             @Override
             public void onCreate(@NonNull SupportSQLiteDatabase db) {

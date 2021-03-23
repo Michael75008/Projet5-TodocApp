@@ -1,19 +1,17 @@
 package com.example.todocapp.todolist;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
-import androidx.room.Room;
+import androidx.lifecycle.MutableLiveData;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.example.todocapp.database.dao.ProjectDao;
-import com.example.todocapp.database.dao.ProjectDatabase;
-import com.example.todocapp.database.dao.TaskDao;
+import com.example.todocapp.R;
+import com.example.todocapp.injections.Injection;
 import com.example.todocapp.models.Project;
 import com.example.todocapp.models.SortMethod;
 import com.example.todocapp.models.Task;
 import com.example.todocapp.models.TaskOnUI;
+import com.example.todocapp.repositories.ProjectDataRepository;
 import com.example.todocapp.repositories.TaskDataRepository;
-import com.example.todocapp.utils.LiveDataTestUtil;
 import com.example.todocapp.utils.TaskListMapper;
 
 import org.junit.Before;
@@ -30,14 +28,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executor;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.example.todocapp.database.dao.ProjectDatabase.prepopulateDataBase;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
 public class TaskViewModelTest {
@@ -45,132 +41,124 @@ public class TaskViewModelTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
-    @Mock
-    private TaskDao taskDao;
+    private TaskViewModel sut;
 
     @Mock
-    private ProjectDao projectDao;
+    private ProjectDataRepository mProjectDataRepository;
 
     @Mock
-    private TaskDataRepository sut;
+    private TaskDataRepository mTaskDataRepository;
 
-    private TaskViewModel mTaskViewModel;
-
-    // FOR DATA
-    private ProjectDatabase database;
+    @Mock
     private TaskListMapper mTaskListMapper;
 
-    // DATA SET FOR TEST
-    private static int TASK_ID = 1;
-    private static Task TASK_DEMO = new Task(5, 2, "Demo task name", new Date().getTime());
-    private static TaskOnUI TASK_ON_UI_DEMO = new TaskOnUI(5, 0xFFEADAD1, "Projet Tartampion", "Demo task on Ui name");
-    private static int TASKLIST_SIZE = 3;
-    private static int PROJECTLIST_SIZE = 3;
-
-
     @Before
-    public void initDb() {
+    public void setUp() {
+        Executor executor = Injection.provideExecutor();
         MockitoAnnotations.initMocks(this);
-        this.database =
-                Room.inMemoryDatabaseBuilder(getApplicationContext(), ProjectDatabase.class)
-                        .allowMainThreadQueries()
-                        .addCallback(prepopulateDataBase())
-                        .build();
-
-        mTaskViewModel = mock(TaskViewModel.class);
-        when(mTaskViewModel.initLists()).thenReturn(database.taskDao().getTasks());
-        when(mTaskViewModel.getProjectsList()).thenReturn(database.projectDao().getProjects());
+        sut = new TaskViewModel(mTaskDataRepository, mProjectDataRepository, executor, mTaskListMapper);
     }
 
     @Test
     public void initLists() {
-        // Init list of tasks
-        LiveData<List<Task>> taskList = mTaskViewModel.initLists();
-        //
-        assertNotNull(taskList.getValue());
+        List<Task> tasks = new ArrayList<>();
+        List<Project> projects = new ArrayList<>();
+        Project project = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1);
+        Task task1 = new Task(1, (int) 3L, "C", mDate("01-01-2021 12:00:00").getTime());
+        Task task2 = new Task(1, (int) 3L, "C", mDate("01-01-2021 12:00:00").getTime());
+        MutableLiveData<List<Task>> fakeLiveData = new MutableLiveData<List<Task>>() {};
+        tasks.add(task1);
+        tasks.add(task2);
+        fakeLiveData.setValue(tasks);
+        projects.add(project);
+
+
+        given(mProjectDataRepository.getProjects()).willReturn(projects);
+        given(mTaskDataRepository.getTasks()).willReturn(fakeLiveData);
+
+        sut.initLists();
+
+
+        verify(mTaskDataRepository, times(1)).getTasks();
+        verify(mProjectDataRepository, times(1)).getProjects();
+
+    }
+
+    @Test
+    public void displaySorter_shouldDiplaySortMethodDependingOnFilterId(){
+        int id = R.id.filter_alphabetical_inverted;
+
+        sut.displaySorter(id);
+
+        assertSame(sut.mSortMethod, SortMethod.ALPHABETICAL_INVERTED);
+    }
+
+    @Test
+    public void sortTasks_shouldSortTasksWhenMethodCalledDependingOnSortChoice() {
+        List<Task> tasks = new ArrayList<>();
+        Task task1 = new Task(1, (int) 1L, "A", mDate("01-01-2021 12:00:00").getTime());
+        Task task2 = new Task(2, (int) 1L, "B", mDate("02-01-2021 12:00:00").getTime());
+        tasks.add(0,task2);
+        tasks.add(1,task1);
+        sut.mSortMethod = SortMethod.ALPHABETICAL;
+
+        sut.sortTasks(tasks);
+
+        assertSame(tasks.get(0), task1);
+        assertSame(tasks.get(1), task2);
     }
 
     @Test
     public void getProjectsList() {
-        // Init list of projects
-        mTaskViewModel.initLists();
-        // Create a list throw viewmodel method
-        List<Project> projectList = mTaskViewModel.getProjectsList();
-        // Check we find all our projects in list
-        assertEquals(PROJECTLIST_SIZE, projectList.size());
-    }
+        List<Project> projects = new ArrayList<>();
+        Project project = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1);
+        projects.add(project);
+        given(mProjectDataRepository.getProjects()).willReturn(projects);
+        MutableLiveData<List<Task>> fakeLiveData = new MutableLiveData<List<Task>>() {};
+        given(mTaskDataRepository.getTasks()).willReturn(fakeLiveData);
+        sut.initLists();
 
+        List<Project> result = sut.getProjectsList();
 
-    @Test
-    public void getTasksOnUi() throws InterruptedException {
-        // Get our list of tasks from DB
-        List<Task> taskListFromDB = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Check if task list contains our element checking list size
-/*
-        assertEquals(TASKLIST_SIZE, taskOnUIList.size());
-        assertEquals(taskListFromDB.get(0).getName(), taskOnUIList.get(0).getTaskName());
-        assertEquals(taskListFromDB.get(1).getName(), taskOnUIList.get(1).getTaskName());
-        assertEquals(taskListFromDB.get(2).getName(), taskOnUIList.get(2).getTaskName());*/
+        verify(mProjectDataRepository, times(1)).getProjects();
+        assertSame(result, projects);
     }
 
     @Test
-    public void displaySorter_sortAlphabetical() {
-        List<Task> tasks = new ArrayList<>();
-        Task task1 = new Task(1, (int) 1L, "A", mDate("01-01-2021 12:00:00").getTime());
-        Task task2 = new Task(2, (int) 1L, "B", mDate("02-01-2021 12:00:00").getTime());
-        tasks.add(task2);
-        tasks.add(task1);
-
-        mTaskViewModel.mSortMethod = SortMethod.ALPHABETICAL;
-        mTaskViewModel.sortTasks(tasks);
-
-        assertSame(tasks.get(0), task1);
-        assertSame(tasks.get(1), task2);
-
-    }
-
-    @Test
-    public void displaySorter_sortAlphabeticalInverted() {
-        List<Task> tasks = new ArrayList<>();
-        Task task1 = new Task(1, (int) 1L, "A", mDate("01-01-2021 12:00:00").getTime());
-        Task task2 = new Task(2, (int) 1L, "B", mDate("02-01-2021 12:00:00").getTime());
-        tasks.add(task1);
-        tasks.add(task2);
-
-        mTaskViewModel.mSortMethod = SortMethod.ALPHABETICAL_INVERTED;
-        mTaskViewModel.sortTasks(tasks);
-
-        assertSame(tasks.get(1), task1);
-        assertSame(tasks.get(0), task2);
-    }
-
-
-    @Test
-    public void deleteTask() throws InterruptedException {
-        // Delete a task throws viewmodel method
-        // Get our list of tasks from DB
-        List<Task> taskListFromDB = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Check we delete one element of the list, should find one element less
-        assertEquals(TASKLIST_SIZE - 1, taskListFromDB.size());
-
-    }
-
-    @Test
-    public void createTask() throws InterruptedException {
+    public void deleteTask() {
         Task task = new Task(1, 2, "Demo task name", new Date().getTime());
 
-        mTaskViewModel.createTask(task);
+        sut.deleteTask(task.getTaskId());
 
+        verify(mTaskDataRepository, times(1)).deleteTask(task.getTaskId());
+    }
+
+    @Test
+    public void createTask() {
+        Task task = new Task(1, 2, "Demo task name", new Date().getTime());
+
+        sut.createTask(task);
+
+        verify(mTaskDataRepository, times(1)).createTask(task);
     }
 
     @Test
     public void onClickDeleteButton() {
-        mTaskViewModel.onClickDeleteButton(TASK_ON_UI_DEMO);
+        TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "Demo task");
+
+        sut.onClickDeleteButton(taskOnUI);
+
+        verify(mTaskDataRepository, times(1)).deleteTask(taskOnUI.getTaskId());
     }
 
     @Test
     public void onClickAddTaskButton() {
-        mTaskViewModel.onClickAddTaskButton(TASK_ON_UI_DEMO);
+        List<Project> projects = new ArrayList<>();
+        TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "Demo task on Ui name");
+
+        sut.onClickAddTaskButton(taskOnUI);
+
+        verify(mTaskDataRepository, times(1)).createTask(mTaskListMapper.getTaskFromTaskUi(taskOnUI, projects));
     }
 
     private static Date mDate(String date) {

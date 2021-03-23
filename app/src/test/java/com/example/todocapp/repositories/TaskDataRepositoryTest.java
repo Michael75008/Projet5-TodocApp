@@ -37,7 +37,7 @@ public class TaskDataRepositoryTest {
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
-    public void initDb() {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         sut = new TaskDataRepository(taskDao);
     }

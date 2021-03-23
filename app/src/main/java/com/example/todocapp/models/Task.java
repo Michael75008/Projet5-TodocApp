@@ -2,7 +2,6 @@ package com.example.todocapp.models;
 
 import android.content.ContentValues;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
@@ -21,7 +20,6 @@ public class Task {
     /**
      * The unique identifier of the project associated to the task
      */
-    @NonNull
     private int projectId;
 
     /**
@@ -32,7 +30,6 @@ public class Task {
     /**
      * The timestamp when the task has been created
      */
-    @NonNull
     private long creationTimestamp;
 
     // Constructors

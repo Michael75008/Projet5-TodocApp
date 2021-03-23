@@ -28,16 +28,15 @@ import java.util.Locale;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 
 @RunWith(AndroidJUnit4.class)
-public class TaskDaoTest  {
+public class TaskDaoTest {
 
-    // FOR DATA
+    // For Data
     private ProjectDatabase database;
-    // DATA SET FOR TEST
-    private static int TASKLIST_SIZE = 3;
+    // Sets
+    private final int TASKLIST_SIZE = 3;
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -53,36 +52,29 @@ public class TaskDaoTest  {
 
     @Test
     public void getTaskListFromDatabaseWithSuccess() throws InterruptedException {
-        // Get our list of tasks from DB
         List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Assert that the list is not empty
-        assertFalse(taskList.isEmpty());
-        // Assert that task list contains all the elements (3 tasks) of database
+
         assertEquals(taskList.size(), TASKLIST_SIZE);
     }
 
     @Test
     public void createTaskAndGetItOnList() throws InterruptedException {
         Task task = new Task(4, 2, "Demo task name", new Date().getTime());
-        // Creates a new demo task
         this.database.taskDao().createTask(task);
-        // Get task list from db
         List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Assert that we added a new task to the list
+
         assertEquals(taskList.size(), TASKLIST_SIZE + 1);
     }
 
     @Test
     public void deleteTasksFromListWithTaskID() throws InterruptedException {
-        // Deletes task with id 1 from list
         this.database.taskDao().deleteTask(1);
-        // Get task list from db
         List<Task> taskList = LiveDataTestUtil.getValue(this.database.taskDao().getTasks());
-        // Assert that we should find 3 tasks again
+
         assertEquals("list should counts 2 tasks", taskList.size(), TASKLIST_SIZE - 1);
     }
 
-    private static RoomDatabase.Callback fakeDataBase() {
+    private RoomDatabase.Callback fakeDataBase() {
         return new RoomDatabase.Callback() {
             @Override
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
@@ -99,7 +91,7 @@ public class TaskDaoTest  {
         };
     }
 
-    private static Date mDate(String date) {
+    private Date mDate(String date) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE);
         try {
@@ -109,7 +101,6 @@ public class TaskDaoTest  {
         }
         return calendar.getTime();
     }
-
 
     @After
     public void closeDb() {

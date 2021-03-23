@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        taskViewModel.displaySorter(item.getItemId(), adapter);
+        taskViewModel.displaySorter(item.getItemId());
+        taskViewModel.getTasksOnUi(taskViewModel.initLists().getValue(), adapter);
         return super.onOptionsItemSelected(item);
     }
 

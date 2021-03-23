@@ -3,6 +3,7 @@ package com.example.todocapp.ui;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -21,7 +22,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.widget.AdapterView.OnItemSelectedListener;
-import static com.example.todocapp.R.id.project_spinner;
 import static com.example.todocapp.R.id.txt_task_name;
 
 public class AddTaskDialog extends AppCompatActivity {
@@ -37,7 +37,7 @@ public class AddTaskDialog extends AppCompatActivity {
     private final Listener2 callback;
     List<Project> mProjectList;
 
-    @BindView(project_spinner)
+    @BindView(R.id.project_spinner)
     Spinner mSpinner;
     @BindView(txt_task_name)
     EditText taskName;
@@ -53,7 +53,7 @@ public class AddTaskDialog extends AppCompatActivity {
 
     public void createDialog(Context context) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.dialog_add_task, null);
+        View view = inflater.inflate(R.layout.dialog_add_task, (ViewGroup)null);
         ButterKnife.bind(this, view);
         configureAlertDialog(context, view);
     }

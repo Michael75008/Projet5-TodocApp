@@ -52,9 +52,9 @@ public abstract class ProjectDatabase extends RoomDatabase {
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
                 //Create 3 tasks
-                ContentValues contentValues6 = new Task(1, (int) 3L, "C", mDate("01-01-2021 12:00:00").getTime()).toContentValue();
+                ContentValues contentValues6 = new Task(1, (int) 3L, "A", mDate("01-01-2021 12:00:00").getTime()).toContentValue();
                 ContentValues contentValues5 = new Task(2, (int) 1L, "B", mDate("01-01-2021 10:00:00").getTime()).toContentValue();
-                ContentValues contentValues4 = new Task(3, (int) 2L, "A", mDate("01-01-2021 08:00:00").getTime()).toContentValue();
+                ContentValues contentValues4 = new Task(3, (int) 2L, "C", mDate("01-01-2021 08:00:00").getTime()).toContentValue();
                 //Create 3 projects
                 ContentValues contentValues3 = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1).toContentValue();
                 ContentValues contentValues2 = new Project((int) 2L, "Projet Lucidia", 0xFFB4CDBA).toContentValue();

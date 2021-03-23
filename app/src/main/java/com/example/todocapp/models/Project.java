@@ -19,13 +19,11 @@ public class Project {
     /**
      * The name of the project
      */
-    @NonNull
     private String name;
 
     /**
      * The hex (ARGB) code of the color associated to the project
      */
-    @NonNull
     private int color;
 
     // Constructors
@@ -69,6 +67,7 @@ public class Project {
     }
 
 
+    @NonNull
     @Override
     public String toString() {
         return name;

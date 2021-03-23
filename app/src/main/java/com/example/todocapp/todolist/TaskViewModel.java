@@ -22,22 +22,21 @@ import java.util.concurrent.Executor;
 public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, AddTaskDialog.Listener2 {
 
     // For init
-
-    private TaskDataRepository taskDataSource;
-    private ProjectDataRepository projectDataSource;
-    private TaskListMapper mTaskListMapper;
-    private Executor executor;
+    private final TaskDataRepository mTaskDataRepository;
+    private final ProjectDataRepository mProjectDataRepository;
+    private final TaskListMapper mTaskListMapper;
+    private final Executor executor;
 
     private List<Project> projectList;
-    private LiveData<List<Task>> tasksList;
-
+    @VisibleForTesting
+    LiveData<List<Task>> tasksList;
     SortMethod mSortMethod = SortMethod.NONE;
 
     // Constructor
 
     public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor, TaskListMapper taskListMapper) {
-        this.taskDataSource = taskDataSource;
-        this.projectDataSource = projectDataSource;
+        this.mTaskDataRepository = taskDataSource;
+        this.mProjectDataRepository = projectDataSource;
         this.executor = executor;
         this.mTaskListMapper = taskListMapper;
     }
@@ -45,16 +44,16 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
     // Initialisation of task list and project list
 
     public LiveData<List<Task>> initLists() {
-        executor.execute(() -> projectList = projectDataSource.getProjects());
+        executor.execute(() -> projectList = mProjectDataRepository.getProjects());
         if (tasksList == null) {
-            tasksList = taskDataSource.getTasks();
+            tasksList = mTaskDataRepository.getTasks();
         }
         return tasksList;
     }
 
     // Display sorter with id ref
 
-    public void displaySorter(int id, TaskAdapter adapter) {
+    public void displaySorter(int id) {
         if (id == R.id.filter_alphabetical) {
             mSortMethod = SortMethod.ALPHABETICAL;
         } else if (id == R.id.filter_alphabetical_inverted) {
@@ -64,7 +63,6 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
         } else if (id == R.id.filter_recent_first) {
             mSortMethod = SortMethod.RECENT_FIRST;
         }
-        getTasksOnUi(tasksList.getValue(), adapter);
     }
 
     // Sort methods for each case
@@ -103,11 +101,12 @@ public class TaskViewModel extends ViewModel implements TaskAdapter.Listener, Ad
     // Task's methods for create and delete task
     @VisibleForTesting
     public void createTask(Task task) {
-        executor.execute(() -> taskDataSource.createTask(task));
+        executor.execute(() -> mTaskDataRepository.createTask(task));
     }
 
-    private void deleteTask(int taskId) {
-        executor.execute(() -> taskDataSource.deleteTask(taskId));
+    @VisibleForTesting
+    public void deleteTask(int taskId) {
+        executor.execute(() -> mTaskDataRepository.deleteTask(taskId));
     }
 
     // OnClick implementations
