@@ -43,6 +43,8 @@ public class TaskViewModelTest {
 
     private TaskViewModel sut;
 
+    private Executor executor;
+
     @Mock
     private ProjectDataRepository mProjectDataRepository;
 
@@ -54,38 +56,40 @@ public class TaskViewModelTest {
 
     @Before
     public void setUp() {
-        Executor executor = Injection.provideExecutor();
+        executor = Injection.provideExecutor();
         MockitoAnnotations.initMocks(this);
         sut = new TaskViewModel(mTaskDataRepository, mProjectDataRepository, executor, mTaskListMapper);
     }
 
     @Test
     public void initLists() {
-        List<Task> tasks = new ArrayList<>();
-        List<Project> projects = new ArrayList<>();
-        Project project = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1);
-        Task task1 = new Task(1, (int) 3L, "C", mDate("01-01-2021 12:00:00").getTime());
-        Task task2 = new Task(1, (int) 3L, "C", mDate("01-01-2021 12:00:00").getTime());
-        MutableLiveData<List<Task>> fakeLiveData = new MutableLiveData<List<Task>>() {};
-        tasks.add(task1);
-        tasks.add(task2);
-        fakeLiveData.setValue(tasks);
-        projects.add(project);
+        executor.execute(() -> {
+            List<Task> tasks = new ArrayList<>();
+            List<Project> projects = new ArrayList<>();
+            Project project = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1);
+            Task task1 = new Task(1, (int) 3L, "C", mDate("01-01-2021 12:00:00").getTime());
+            Task task2 = new Task(1, (int) 3L, "C", mDate("01-01-2021 12:00:00").getTime());
+            MutableLiveData<List<Task>> fakeLiveData = new MutableLiveData<List<Task>>() {
+            };
+            tasks.add(task1);
+            tasks.add(task2);
+            fakeLiveData.setValue(tasks);
+            projects.add(project);
 
 
-        given(mProjectDataRepository.getProjects()).willReturn(projects);
-        given(mTaskDataRepository.getTasks()).willReturn(fakeLiveData);
+            given(mProjectDataRepository.getProjects()).willReturn(projects);
+            given(mTaskDataRepository.getTasks()).willReturn(fakeLiveData);
 
-        sut.initLists();
+            sut.initLists();
 
 
-        verify(mTaskDataRepository, times(1)).getTasks();
-        verify(mProjectDataRepository, times(1)).getProjects();
-
+            verify(mTaskDataRepository, times(1)).getTasks();
+            verify(mProjectDataRepository, times(1)).getProjects();
+        });
     }
 
     @Test
-    public void displaySorter_shouldDiplaySortMethodDependingOnFilterId(){
+    public void displaySorter_shouldDiplaySortMethodDependingOnFilterId() {
         int id = R.id.filter_alphabetical_inverted;
 
         sut.displaySorter(id);
@@ -98,8 +102,8 @@ public class TaskViewModelTest {
         List<Task> tasks = new ArrayList<>();
         Task task1 = new Task(1, (int) 1L, "A", mDate("01-01-2021 12:00:00").getTime());
         Task task2 = new Task(2, (int) 1L, "B", mDate("02-01-2021 12:00:00").getTime());
-        tasks.add(0,task2);
-        tasks.add(1,task1);
+        tasks.add(0, task2);
+        tasks.add(1, task1);
         sut.mSortMethod = SortMethod.ALPHABETICAL;
 
         sut.sortTasks(tasks);
@@ -110,55 +114,68 @@ public class TaskViewModelTest {
 
     @Test
     public void getProjectsList() {
-        List<Project> projects = new ArrayList<>();
-        Project project = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1);
-        projects.add(project);
-        given(mProjectDataRepository.getProjects()).willReturn(projects);
-        MutableLiveData<List<Task>> fakeLiveData = new MutableLiveData<List<Task>>() {};
-        given(mTaskDataRepository.getTasks()).willReturn(fakeLiveData);
-        sut.initLists();
+        executor.execute(() -> {
+            List<Project> projects = new ArrayList<>();
+            Project project = new Project((int) 1L, "Projet Tartampion", 0xFFEADAD1);
+            projects.add(project);
+            given(mProjectDataRepository.getProjects()).willReturn(projects);
+            MutableLiveData<List<Task>> fakeLiveData = new MutableLiveData<List<Task>>() {
+            };
+            given(mTaskDataRepository.getTasks()).willReturn(fakeLiveData);
+            sut.initLists();
 
-        List<Project> result = sut.getProjectsList();
+            List<Project> result = sut.getProjectsList();
 
-        verify(mProjectDataRepository, times(1)).getProjects();
-        assertSame(result, projects);
+            verify(mProjectDataRepository, times(1)).getProjects();
+            assertSame(result, projects);
+        });
     }
 
     @Test
     public void deleteTask() {
-        Task task = new Task(1, 2, "Demo task name", new Date().getTime());
+        executor.execute(() -> {
+            Task task = new Task(1, 2, "Demo task name", new Date().getTime());
 
-        sut.deleteTask(task.getTaskId());
+            sut.deleteTask(task.getTaskId());
 
-        verify(mTaskDataRepository, times(1)).deleteTask(task.getTaskId());
+            verify(mTaskDataRepository, times(1)).deleteTask(task.getTaskId());
+        });
     }
 
     @Test
     public void createTask() {
-        Task task = new Task(1, 2, "Demo task name", new Date().getTime());
+        executor.execute(() -> {
+            Task task = new Task(1, 2, "Demo task name", new Date().getTime());
 
-        sut.createTask(task);
+            sut.createTask(task);
 
-        verify(mTaskDataRepository, times(1)).createTask(task);
+            verify(mTaskDataRepository, times(1)).createTask(task);
+        });
+
     }
 
     @Test
     public void onClickDeleteButton() {
-        TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "Demo task");
+        executor.execute(() -> {
+            TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "Demo task");
 
-        sut.onClickDeleteButton(taskOnUI);
+            sut.onClickDeleteButton(taskOnUI);
 
-        verify(mTaskDataRepository, times(1)).deleteTask(taskOnUI.getTaskId());
+            verify(mTaskDataRepository, times(1)).deleteTask(taskOnUI.getTaskId());
+        });
+
     }
 
     @Test
     public void onClickAddTaskButton() {
-        List<Project> projects = new ArrayList<>();
-        TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "Demo task on Ui name");
+        executor.execute(() -> {
+            List<Project> projects = new ArrayList<>();
+            TaskOnUI taskOnUI = new TaskOnUI(1, 0xFFEADAD1, "Projet Tartampion", "Demo task on Ui name");
 
-        sut.onClickAddTaskButton(taskOnUI);
+            sut.onClickAddTaskButton(taskOnUI);
 
-        verify(mTaskDataRepository, times(1)).createTask(mTaskListMapper.getTaskFromTaskUi(taskOnUI, projects));
+            verify(mTaskDataRepository, times(1)).createTask(mTaskListMapper.getTaskFromTaskUi(taskOnUI, projects));
+        });
     }
 
     private static Date mDate(String date) {
